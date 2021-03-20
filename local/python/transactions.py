@@ -116,10 +116,26 @@ def update_transaction(db_engine, transaction_id, other_values):
     cleared = other_values[9]
     if cleared is None:
         cleared = ''
+
+    description = str(other_values[3]).replace("'", "''")
+
+    tag = other_values[6]
+    if tag is None:
+        tag = ''
+
+    number = other_values[2]
+    memo = other_values[4]
+    tax_item = other_values[8]
+
     sql = f"""
         update transactions
         set obsolete_date = null,
-        cleared = '{cleared}'
+        cleared = '{cleared}',
+        number = '{number}',
+        tag = '{tag}',
+        description = '{description}',
+        memo = '{memo}',
+        tax_item = '{tax_item}'
         where transaction_id = {transaction_id}
     """
     db_engine.execute(sql)
