@@ -7,20 +7,6 @@ import logging as log
 known_categories = {}
 
 
-def select_all_categories(db_engine):
-    sql = """
-        select category_name, category_id
-        from categories
-        order by category_name
-    """
-    results = db_engine.execute(sql)
-    categories = {}
-    for row in results:
-        categories[row['category_name']] = row['category_id']
-
-    return categories
-
-
 def load_new_categories_from_workbook(db_engine, workbook, output_report):
     global known_categories
     #  Load the existing categories
@@ -59,3 +45,26 @@ def add_new_category(db_engine, category_name):
     results = db_engine.execute(sql)
     category_id = results.fetchone()
     known_categories[category_name] = category_id
+
+
+def select_all_categories(db_engine):
+    sql = """
+        select category_name, category_id
+        from categories
+        order by category_name
+    """
+    results = db_engine.execute(sql)
+    categories = {}
+    for row in results:
+        categories[row['category_name']] = row['category_id']
+
+    return categories
+
+
+def get_category_id(category_name):
+    try:
+        category_id = known_categories[category_name]
+    except KeyError:
+        log.debug(f'Category lookup error on "{category_name}"')
+        category_id = 0
+    return category_id
