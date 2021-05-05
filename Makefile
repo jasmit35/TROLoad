@@ -29,5 +29,7 @@ cluster-down:
 #
 run-load:
 	local/bin/runmypy.sh ${TRO_LOCAL}/python/troload.py -e devl >${TRO_LOCAL}/log/troload.log 2>&1
-
-
+#
+doc-build:
+	docker build . --tag jasmit/troload:latest 
+#

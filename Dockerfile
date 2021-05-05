@@ -11,9 +11,11 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 #  Copy all the contents of the local src directory to the container 
-COPY ./src /code
+COPY ./local/bin local/bin
+COPY ./local/python local/python
 
 
 EXPOSE 5000
-CMD python server.py
+#  CMD python server.py
+# CMD [ "/bin/bash" ]
  

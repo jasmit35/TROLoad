@@ -1,0 +1,38 @@
+version: "3.7"
+services:
+
+  database:
+    image: tro_db 
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/opt/app/postgres/data
+    networks:
+      - backend-network
+    #  Expose the Postgres port for development, not production
+    #  ports:
+    #    - 5432:5432
+    environment:
+      - PGDATABASE=pgdb
+
+  application:
+    build: . 
+    restart: "no"
+    secrets:
+      - db-password
+    networks:
+      - backend-network
+    volumes:
+      - ./app/src:/code
+      - ./local/log:/local/log
+
+volumes:
+  db-data:
+
+secrets:
+  db-password:
+    file: .password.txt
+
+networks:
+  backend-network:
