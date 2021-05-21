@@ -1,0 +1,35 @@
+#  We are using a two stage build for the image in order to 
+#  minimize the size of the final image.
+
+#  First stage
+#  Use the offical FULL version of python as the base for our BUILDER image
+# FROM python:3.9 AS builder
+# COPY requirements.txt .
+
+#  Install dependencies to the local user directory (eg. /root/.local)
+# RUN pip install --user -r requirements.txt
+
+
+#  Second stage
+#  Use the offical SLIM version of python as the base for our FINALimage
+FROM python:3.9-slim
+#  Copy only the dependencies that are needed for our application and the source files
+# COPY --from=builder /root/.local /root/.local
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+RUN apt-get update && apt-get -y upgrade
+
+#  Create and use the "container" user ID
+RUN useradd --create-home -u 5000 container
+WORKDIR /home/container
+USER container
+
+# COPY --from=builder /root/.local .local
+COPY ./src .
+
+# ENV PATH=/home/container/.local:$PATH
+
+#  Make sure you include the -u flag to have our stdout logged
+CMD [ "python", "-u", "./local/python/troload.py", "-e", "${ENVIRONMENT}" ]
+ 

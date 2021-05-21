@@ -8,12 +8,9 @@ jsstdrpt.pv
 import datetime
 import logging
 import pathlib
-
-jsstdrpt_version = "1"
 #
 #  Globals
 #
-
 rpt_file = None
 rpt_path = None
 
@@ -50,7 +47,7 @@ def start_std_rpt(output_dir, prefix, format="%Y_%m_%d_%H_%M", version=None):
     rpt_file.write(f"{prefix} version information - {version}\n")
 
     rpt_file.write(("=" * 132) + "\n")
-    logging.info("end   start_std_rpt - returns None ")
+    logging.info("end   start_std_rpt - returns None")
 
 
 def finish_std_rpt(return_code):

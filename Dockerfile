@@ -1,21 +1,17 @@
-#  Use the offical slim version of python as the base for our image
-FROM python:3.8-slim
+FROM python:3.9-slim-buster
 
-#  Set the working directory in the container
-WORKDIR /code
+COPY install-packages.sh .
+RUN ./install-packages.sh
 
-#  Copy the dependiecies file from the source to the container working directory
+RUN useradd -m -d /home/container -u 5000 container 
+USER container
+RUN mkdir /home/container/troload
+WORKDIR /home/container/troload
+
 COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-#  Install all the dependiences into the container
-RUN pip install -r requirements.txt
+COPY ./src .
 
-#  Copy all the contents of the local src directory to the container 
-COPY ./local/bin local/bin
-COPY ./local/python local/python
-
-
-EXPOSE 5000
-#  CMD python server.py
-# CMD [ "/bin/bash" ]
+CMD [ "python", "-u", "./local/python/troload.py", "-e", "${ENVIRONMENT}" ]
  

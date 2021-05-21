@@ -1,0 +1,8 @@
+create user tro_rw with password 'tro_rw_devl';
+
+grant select, insert, update, delete on all tables in schema tro to tro_rw;
+
+create user tro_ro with password 'tro_ro_devl';
+
+grant select on all tables in schema tro to tro_ro;
+

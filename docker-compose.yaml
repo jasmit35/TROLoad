@@ -2,19 +2,20 @@ version: "3.7"
 services:
 
   database:
-    image: tro_db 
+    image: jasmit/pgpods-server:v0.3.0
     restart: always
+    hostname: 'pgdbhost'
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
     secrets:
       - db-password
     volumes:
-      - db-data:/opt/app/postgres/data
+      - postgres-data:/opt/app/postgres/data
     networks:
       - backend-network
-    #  Expose the Postgres port for development, not production
-    #  ports:
-    #    - 5432:5432
-    environment:
-      - PGDATABASE=pgdb
+    ports:
+      - 5432:5432
+
 
   application:
     build: . 
@@ -24,15 +25,19 @@ services:
     networks:
       - backend-network
     volumes:
-      - ./app/src:/code
-      - ./local/log:/local/log
-
-volumes:
-  db-data:
+      - /Users/Jeff/devl/troload/local/rpt/:/home/container/troload/local/rpt/
+      - /Users/Jeff/devl/troload/local/stage/:/home/container/troload/local/stage/
+    depends_on: 
+      - database
 
 secrets:
   db-password:
-    file: .password.txt
+    file: ./.secrets-db-password
 
 networks:
   backend-network:
+
+volumes:
+  postgres-data:
+    external: true
+    

@@ -3,4 +3,10 @@ local/log/*.log
 local/log/*.rpt
 local/python/__pycache__/*.pyc
 local/python/modules/__pycache__/*.pyc
+local/rpt/*
+local/stage/*
 local/tmp/*
+
+.vscode/
+
+.secrets-db-password
