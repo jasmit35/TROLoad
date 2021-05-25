@@ -16,6 +16,7 @@ def select_all_accounts(connection):
     with connection.cursor() as cursor:
         cursor.execute(sql)
         results = cursor.fetchall()
+        connection.commit()
 
     accounts = dict(results)
     log.debug(f'end   get_all_accounts - returns {accounts}')

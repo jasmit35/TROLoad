@@ -8,7 +8,9 @@ import logging
 import openpyxl
 import os
 import sys
-from time import sleep
+# from time import sleep
+
+# from psycopg2.extensions import TRANSACTION_STATUS_IDLE
 
 import accounts as accts
 import categories as cat
@@ -39,6 +41,7 @@ def my_startup(log_level, home_dir, environment):
                                 )
 
     connection = eng.pg_get_connection(host='pgdbhost', database='devl', username='tro_rw', password='tro_rw_devl')
+    connection.autocommit = True
 
     output_dir = rpt.make_std_out_dir(home_dir + '/local/rpt')
     rpt.start_std_rpt(output_dir, "TROLoad", version="0.1.1")
@@ -102,22 +105,13 @@ def main():
     my_startup(log_level, home_dir, environment)
 
     stage_dir = 'local/stage'
-    rc = 0
-    while True:
-        try:
-            file_name = get_next_file(stage_dir)
-            if file_name is not None:
-                process_file(file_name)
-            else:
-                logging.info("No new files were found")
-                sleep(300)
-        except Exception as e:
-            logging.error(f'Error! Exception {e} occured.')
-            rc = 1
-            # sleep(300)
-        finally:
-            my_shutdown(rc)
-            # pass
+    file_name = get_next_file(stage_dir)
+    if file_name is not None:
+        process_file(file_name)
+    else:
+        logging.info("No new files were found")
+        rpt.info("No new files were found")
+    my_shutdown(0)
 
 
 if __name__ == "__main__":

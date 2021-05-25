@@ -25,21 +25,24 @@ def select_all_categories(connection):
 
 
 def get_category_id(category_name):
+    global known_categories
+    log.debug(f'begin get_category_id({category_name})')
     try:
         category_id = known_categories[category_name]
     except KeyError:
-        return None
+        return 0
+    log.debug(f'end   get_category_id - returns {category_id}')
     return category_id
 
 
 def select_category_id(connection, category_name):
-    sql = f"""
+    sql = """
         select category_id
         from tro.categories
-        where category_name = '{category_name}'
+        where category_name = %s
     """
     with connection.cursor() as cursor:
-        cursor.execute(sql)
+        cursor.execute(sql, (category_name,))
         results = cursor.fetchone()
         category_id = results[0]
     return category_id
@@ -49,7 +52,10 @@ def add_new_category(connection, category_name):
     global known_categories
     log.debug(f'Begin add_new_category({category_name})')
 
-    sql = "insert into tro.categories (category_name, category_type_fk, category_group_fk) values (%s, %s, %s)"
+    sql = """
+        insert into tro.categories (category_name, category_type_fk, category_group_fk)
+        values (%s, %s, %s)
+    """
     with connection.cursor() as cursor:
         cursor.execute(sql, (category_name, 0, 0))
 
@@ -66,10 +72,10 @@ def load_new_categories_from_workbook(connection, workbook):
     known_categories = select_all_categories(connection)
     sheet = workbook.active
 
-    rpt.write("\n\nThe following new categrories have been added:")
+    rpt.write("\n\n  The following new categrories have been added:\n")
 
     for value in sheet.iter_rows(
-        min_row=4, max_row=99,
+        min_row=5, max_row=999,
         min_col=7, max_col=7,
         values_only=True,
     ):
@@ -78,4 +84,4 @@ def load_new_categories_from_workbook(connection, workbook):
         if value[0] in known_categories:
             continue
         add_new_category(connection, value[0])
-        rpt.write("   " + str(value[0]) + "\n")
+        rpt.write(" `   " + str(value[0]) + "\n")

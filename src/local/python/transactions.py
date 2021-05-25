@@ -38,29 +38,32 @@ def mark_tranactions_obsolete(connection, start_date, end_date):
 
 def get_transaction_id(connection, account_id, transaction_date, category_id, amount):
     log.debug(f'Transaction date {transaction_date}')
-    sql = f"""
+    sql = """
         select transaction_id
-        from transactions
-        where account_fk = '{account_id}'
-        and transaction_date = '{transaction_date}'
-        and category_fk = '{category_id}'
-        and amount = '{amount}'
+        from tro.transactions
+        where account_fk = %s
+        and transaction_date = %s
+        and category_fk = %s
+        and amount = %s
     """
-    result = connection.execute(sql)
-    row = result.fetchone()
+    with connection.cursor() as cursor:
+        cursor.execute(sql, (account_id, transaction_date, category_id, amount))
+        row = cursor.fetchone()
     if row is None:
-        transaction_id = 0
+        transaction_id = None
     else:
         transaction_id = row[0]
     return transaction_id
 
 
 def insert_transaction(connection, account_id, transaction_date, category_id, amount):
-    sql = f"""
-        insert into transactions (account_fk, transaction_date, category_fk, amount)
-        values ({account_id}, '{transaction_date}', {category_id}, {amount})
+    log.debug(f'begin insert_transaction ({account_id}, {transaction_date}, {category_id}, {amount})')
+    sql = """
+        insert into tro.transactions (account_fk, transaction_date, category_fk, amount)
+        values (%s, %s, %s, %s)
     """
-    connection.execute(sql)
+    with connection.cursor() as cursor:
+        cursor.execute(sql, (account_id, transaction_date, category_id, amount))
 
 
 def update_transaction(connection, transaction_id, other_values):
@@ -78,18 +81,19 @@ def update_transaction(connection, transaction_id, other_values):
     memo = other_values[4]
     tax_item = other_values[8]
 
-    sql = f"""
-        update transactions
+    sql = """
+        update tro.transactions
         set obsolete_date = null,
-        cleared = '{cleared}',
-        number = '{number}',
-        tag = '{tag}',
-        description = '{description}',
-        memo = '{memo}',
-        tax_item = '{tax_item}'
-        where transaction_id = {transaction_id}
+        cleared = %s,
+        number = %s,
+        tag = %s,
+        description = %s,
+        memo = %s,
+        tax_item = %s
+        where transaction_id = %s
     """
-    connection.execute(sql)
+    with connection.cursor() as cursor:
+        cursor.execute(sql, (cleared, number, tag, description, memo, tax_item, transaction_id))
 
 
 def load_transactions_from_workbook(connection, workbook):
@@ -104,7 +108,7 @@ def load_transactions_from_workbook(connection, workbook):
     previous_transaction_date = None
     previous_account_id = None
 
-    rpt.write("The following transactions have been added:")
+    rpt.write("\n\n  The following transactions have been added:\n")
 
     for value in sheet.iter_rows(
         min_row=8, max_row=999,
@@ -138,7 +142,8 @@ def load_transactions_from_workbook(connection, workbook):
 
         transaction_id = get_transaction_id(connection, account_id, transaction_date, category_id, amount)
 
-        if transaction_id == 0:
+        if transaction_id is None:
             insert_transaction(connection, account_id, transaction_date, category_id, amount)
+            rpt.write(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
         else:
             update_transaction(connection, transaction_id, value)
