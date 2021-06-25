@@ -1,5 +1,5 @@
 
-VERSION := "v0.2.0"
+VERSION := "v0.2.1"
 
 ########################################
 
@@ -35,15 +35,13 @@ build-full:
 
 run:
 	docker-compose --file=${DCYAML} up -d
+	docker-compose --file=${DCYAML} ps
 
 ps:
 	docker-compose --file=${DCYAML} ps
 
-log_db:
-	docker-compose --file=${DCYAML} logs database 
-
-log_app:
-	docker-compose --file=${DCYAML} logs application 
+logs:
+	docker-compose --file=${DCYAML} logs load 
 
 exec_db:
 	docker exec -it troload_database_1 /bin/bash
@@ -56,8 +54,7 @@ stop:
 	docker-compose --file=${DCYAML} stop database 
 
 rm:
-	docker-compose --file=${DCYAML} rm -fsv application 
-	docker-compose --file=${DCYAML} rm -fsv database 
+	docker-compose --file=${DCYAML} rm -fsv load 
 
 
 ########################################

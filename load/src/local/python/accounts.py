@@ -76,7 +76,7 @@ def load_new_accounts_from_workbook(connection, workbook):
         account_name = value[0]
         if account_name is None:
             continue
-        if account_name in known_accounts:
+        if account_name in known_accounts.values():
             continue
         add_new_account(connection, account_name)
         rpt.write(f"    {account_name}\n")

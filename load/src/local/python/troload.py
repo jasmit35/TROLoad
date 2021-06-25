@@ -8,7 +8,7 @@ import logging
 import openpyxl
 import os
 import sys
-# from time import sleep
+from time import sleep
 
 # from psycopg2.extensions import TRANSACTION_STATUS_IDLE
 
@@ -40,7 +40,7 @@ def my_startup(log_level, home_dir, environment):
                                 handlers=[logging.StreamHandler(), logging.FileHandler(filename='troload.log')]
                                 )
 
-    connection = eng.pg_get_connection(host='pgdbhost', database='devl', username='tro_rw', password='tro_rw_devl')
+    connection = eng.pg_get_connection(host='pgpods-server', database='devl', username='tro_rw', password='tro_rw_devl')
     connection.autocommit = True
 
     output_dir = rpt.make_std_out_dir(home_dir + '/local/rpt')
@@ -110,7 +110,8 @@ def main():
         process_file(file_name)
     else:
         logging.info("No new files were found")
-        rpt.info("No new files were found")
+        rpt.write("No new files were found\n")
+    sleep(3600)
     my_shutdown(0)
 
 

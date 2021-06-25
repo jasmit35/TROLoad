@@ -1,43 +1,21 @@
 version: "3.7"
 services:
 
-  database:
-    image: jasmit/pgpods-server:v0.3.0
-    restart: always
-    hostname: 'pgdbhost'
-    environment:
-      - ENVIRONMENT=${ENVIRONMENT}
-    secrets:
-      - db-password
-    volumes:
-      - postgres-data:/opt/app/postgres/data
-    networks:
-      - backend-network
-    ports:
-      - 5432:5432
-
-
-  application:
-    build: . 
+  load:
+    build: load 
     restart: "no"
     secrets:
       - db-password
     networks:
-      - backend-network
+      - pgpods-network 
     volumes:
       - /Users/Jeff/devl/troload/local/rpt/:/home/container/troload/local/rpt/
       - /Users/Jeff/devl/troload/local/stage/:/home/container/troload/local/stage/
-    depends_on: 
-      - database
 
 secrets:
   db-password:
     file: ./.secrets-db-password
 
 networks:
-  backend-network:
-
-volumes:
-  postgres-data:
+  pgpods-network:
     external: true
-    
