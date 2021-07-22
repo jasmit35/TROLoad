@@ -40,7 +40,7 @@ def my_startup(log_level, home_dir, environment):
                                 handlers=[logging.StreamHandler(), logging.FileHandler(filename='troload.log')]
                                 )
 
-    connection = eng.pg_get_connection(host='pgpods-server', database='devl', username='tro_rw', password='tro_rw_devl')
+    connection = eng.pg_get_connection(host='pgpods-server', database=environment, username='tro_rw', password=f'tro_rw_{environment}')
     connection.autocommit = True
 
     output_dir = rpt.make_std_out_dir(home_dir + '/local/rpt')
