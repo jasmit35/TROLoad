@@ -13,5 +13,5 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY ./src .
 
-CMD [ "python", "-u", "./local/python/troload.py", "-e", "${ENVIRONMENT}" ]
+CMD [ "python", "-u", "./local/python/troload.py", "-e", "$ENVIRONMENT" ]
  
