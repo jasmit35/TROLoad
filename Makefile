@@ -17,7 +17,7 @@ ifeq (${ENV}, "prod")
         TROHOME := "/home/jeff/prod/troload"
 endif
 
-DCYAML := "${TROHOME}/docker-compose.yaml"
+DCYAML := "${TROHOME}/docker-compose-${ENV}.yaml"
 
 ########################################
 
@@ -34,33 +34,26 @@ build-full:
 	docker-compose --file=${DCYAML} build --pull --no-cache
 
 run:
-	docker-compose --file=${DCYAML} up -d
-	docker-compose --file=${DCYAML} ps
+	docker-compose --file=${DCYAML} run troload --environment=${ENV}
 
 ps:
-	docker-compose --file=${DCYAML} ps
+	docker-compose --file=${DCYAML} ps -a 
 
 logs:
-	docker-compose --file=${DCYAML} logs load 
+	docker logs troload 
 
-exec_db:
-	docker exec -it troload_database_1 /bin/bash
-
-exec_app:
+exec:
 	docker exec -it troload_application_1 /bin/bash
 
-stop:
-	docker-compose --file=${DCYAML} stop application 
-	docker-compose --file=${DCYAML} stop database 
-
 rm:
-	docker-compose --file=${DCYAML} rm -fsv load 
+	docker-compose --file=${DCYAML} rm -fvs troload
+	docker-compose --file=${DCYAML} ps -a 
 
 
 ########################################
 
 connect-db:
-	psql -h localhost -p 5432 -d tro -U postgres
+	psql -h localhost -p 5432 -d ${ENV} -U postgres
 
 cluster-status:
 	@echo "\nNetworks\n"
@@ -71,3 +64,11 @@ cluster-status:
 # run-load:
 # 	local/bin/runmypy.sh ${TRO_LOCAL}/python/troload.py -e devl >${TRO_LOCAL}/log/troload.log 2>&1
 #
+
+# run-old:
+# 	docker run \
+# 	--detach \
+# 	--name troload \
+# 	troload_troload \
+# 	--environment ${ENV} 
+# 	docker ps -a

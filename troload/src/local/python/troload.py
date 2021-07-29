@@ -25,6 +25,7 @@ connection = None
 
 def my_startup(log_level, home_dir, environment):
     global connection
+    print(f'begin my_startup({environment=}')
 
     if log_level == 'DEBUG':
         logging.basicConfig(level=logging.DEBUG,
@@ -111,7 +112,7 @@ def main():
     else:
         logging.info("No new files were found")
         rpt.write("No new files were found\n")
-    sleep(3600)
+    sleep(600)
     my_shutdown(0)
 
 
