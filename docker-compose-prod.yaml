@@ -1,0 +1,22 @@
+version: "3.7"
+services:
+
+  troload:
+    build: troload 
+    restart: "no"
+    secrets:
+      - db-password
+    networks:
+      - pgpods-network 
+    volumes:
+      - /home/Jeff/prod/troload/local/log/:/home/container/troload/local/log/
+      - /home/Jeff/prod/troload/local/rpt/:/home/container/troload/local/rpt/
+      - /home/Jeff/prod/troload/local/stage/:/home/container/troload/local/stage/
+
+secrets:
+  db-password:
+    file: ./.secrets-db-password
+
+networks:
+  pgpods-network:
+    external: true

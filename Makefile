@@ -3,21 +3,22 @@ VERSION := "v0.2.1"
 
 ########################################
 
-ENV := "${ENVIRONMENT}"
+ENV := ${ENVIRONMENT}
 
-ifeq (${ENV}, "devl")
-        TROHOME := "/Users/jeff/devl/troload"
+ifeq (${ENV}, devl)
+        TROHOME := /Users/jeff/devl/troload
 endif
 
-ifeq (${ENV}, "test")
-        TROHOME := "/Users/jeff/test/troload"
+ifeq (${ENV}, test)
+        TROHOME := /Users/jeff/test/troload
 endif
 
-ifeq (${ENV}, "prod")
-        TROHOME := "/home/jeff/prod/troload"
+ifeq (${ENV}, prod)
+        TROHOME := /home/jeff/prod/troload
 endif
 
-DCYAML := "${TROHOME}/docker-compose-${ENV}.yaml"
+DCYAML := ${TROHOME}/docker-compose-${ENV}.yaml
+DCF := docker-compose --file=${DCYAML}
 
 ########################################
 
@@ -34,7 +35,11 @@ build-full:
 	docker-compose --file=${DCYAML} build --pull --no-cache
 
 run:
-	docker-compose --file=${DCYAML} run troload --environment=${ENV}
+	docker-compose --file=${DCYAML} run \
+        --detach \
+        --name troload \
+        troload \
+        --environment=${ENV}
 
 ps:
 	docker-compose --file=${DCYAML} ps -a 
@@ -43,11 +48,10 @@ logs:
 	docker logs troload 
 
 exec:
-	docker exec -it troload_application_1 /bin/bash
+	docker-compose --file=${DCYAML} exec troload /bin/bash
 
 rm:
-	docker-compose --file=${DCYAML} rm -fvs troload
-	docker-compose --file=${DCYAML} ps -a 
+	docker-compose --file=${DCYAML} rm -fv troload
 
 
 ########################################
