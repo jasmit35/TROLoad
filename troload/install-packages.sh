@@ -17,7 +17,10 @@ apt-get update
 apt-get -y upgrade
 
 # Install a new package, without unnecessary recommended packages:
-# apt-get -y install --no-install-recommends syslog-ng
+apt-get -y install --no-install-recommends gcc 
+apt-get -y install --no-install-recommends postgresql-client
+apt-get -y install --no-install-recommends libpq-dev
+apt-get -y install --no-install-recommends libc-dev
 
 # Delete cached files we don't need anymore (note that if you're
 # using official Docker images for Debian or Ubuntu, this happens
