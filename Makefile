@@ -36,13 +36,13 @@ build-full:
 
 run:
 	docker-compose --file=${DCYAML} run \
-        --detach \
-        --name troload \
-	--volume ${HOME}/${ENVIRONMENT}/local/log:/home/container/troload/local/log
-	--volume ${HOME}/${ENVIRONMENT}/local/rpt:/home/container/troload/local/rpt
-	--volume ${HOME}/${ENVIRONMENT}/local/log:/home/container/troload/local/log
-        troload \
-        --environment=${ENV}
+	--detach \
+	--name troload \
+	--volume ${HOME}/${ENVIRONMENT}/troload/local/log:/home/container/troload/local/log \
+	--volume ${HOME}/${ENVIRONMENT}/troload/local/rpt:/home/container/troload/local/rpt \
+	--volume ${HOME}/${ENVIRONMENT}/troload/local/stage:/home/container/troload/local/stage \
+	troload \
+	--environment=${ENV}
 
 ps:
 	docker-compose --file=${DCYAML} ps -a 
@@ -52,6 +52,9 @@ logs:
 
 exec:
 	docker-compose --file=${DCYAML} exec troload /bin/bash
+
+stop:
+	docker-compose --file=${DCYAML} stop troload
 
 rm:
 	docker-compose --file=${DCYAML} rm -fv troload
