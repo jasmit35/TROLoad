@@ -38,6 +38,9 @@ run:
 	docker-compose --file=${DCYAML} run \
         --detach \
         --name troload \
+	--volume ${HOME}/${ENVIRONMENT}/local/log:/home/container/troload/local/log
+	--volume ${HOME}/${ENVIRONMENT}/local/rpt:/home/container/troload/local/rpt
+	--volume ${HOME}/${ENVIRONMENT}/local/log:/home/container/troload/local/log
         troload \
         --environment=${ENV}
 

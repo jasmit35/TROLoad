@@ -8,10 +8,6 @@ services:
       - db-password
     networks:
       - pgpods-network 
-    volumes:
-      - /Users/Jeff/test/troload/local/log/:/home/container/troload/local/log/
-      - /Users/Jeff/test/troload/local/rpt/:/home/container/troload/local/rpt/
-      - /Users/Jeff/test/troload/local/stage/:/home/container/troload/local/stage/
 
 secrets:
   db-password:
