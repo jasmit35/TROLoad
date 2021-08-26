@@ -3,6 +3,7 @@ troload - Load Excel spreadsheet from Quicken into the Postgres TRO database.
 '''
 import argparse
 import config
+import debugpy
 import glob
 import logging
 import openpyxl
@@ -95,6 +96,8 @@ def process_file(file_name):
 
 
 def main():
+    debugpy.listen(5678)
+    debugpy.wait_for_client()
     config_file = './local/etc/troload.cfg'
     my_config = config.Config(config_file)
     log_level = my_config['devl.log_level']

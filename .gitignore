@@ -1,4 +1,7 @@
 .DS_Store
+.vscode/
+.secrets-db-password
+
 local/log/*.log
 local/python/__pycache__/*.pyc
 local/python/modules/__pycache__/*.pyc
@@ -6,6 +9,4 @@ local/rpt/*.rpt
 local/stage/*.bkup
 local/tmp/*
 
-.vscode/
-
-.secrets-db-password
+samples/*

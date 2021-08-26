@@ -2,8 +2,15 @@ version: "3.7"
 services:
 
   troload:
-    build: troload 
+    container_name: troload
+    image: jasmit/troload
+    build:
+      context: .
+      target: debug
+      dockerfile: ./Dockerfile
     restart: "no"
+    ports:
+      - 5678:5678
     secrets:
       - db-password
     networks:
