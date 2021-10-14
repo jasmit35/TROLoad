@@ -3,31 +3,37 @@ troload - Load Excel spreadsheet from Quicken into the Postgres TRO database.
 '''
 import argparse
 import config
-import debugpy
 import glob
 import logging
-import openpyxl
 import os
 import sys
-from time import sleep
 
-# from psycopg2.extensions import TRANSACTION_STATUS_IDLE
-
-import accounts as accts
-import categories as cat
 import transactions as trans
+from transwkbk import TransactionWorkbook
+
 
 import modules.jsstdrpt as rpt
 import modules.jspgeng as eng
-#
-#  Global variables
-connection = None
 
 
-def my_startup(log_level, home_dir, environment):
-    global connection
-    print(f'begin my_startup({environment=}')
+def get_cmdline_parms():
+    parser = argparse.ArgumentParser(description="TROLoad")
+    parser.add_argument(
+        "-e", "--environment",
+        required=True,
+        help="Environment - devl, test or prod"
+    )
+    args = parser.parse_args()
+    return vars(args)
 
+
+def get_cfgfile_parms(environment):
+    cfgfile = 'local/etc/troload.cfg'
+    cfgfile_all_parms = config.Config(cfgfile)
+    return cfgfile_all_parms[environment]
+
+
+def start_log(log_level):
     if log_level == 'DEBUG':
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(message)s',
@@ -41,13 +47,23 @@ def my_startup(log_level, home_dir, environment):
                                 datefmt='%Y-%m-%d %H:%M:%S',
                                 handlers=[logging.StreamHandler(), logging.FileHandler(filename='troload.log')]
                                 )
+    return logging
 
-    connection = eng.pg_get_connection(host='pgpods-server', database=environment, username='tro_rw', password=f'tro_rw_{environment}')
-    connection.autocommit = True
 
+def start_rpt(home_dir):
     output_dir = rpt.make_std_out_dir(home_dir + '/local/rpt')
     rpt.start_std_rpt(output_dir, "TROLoad", version="0.1.1")
     rpt.write('TROLoad is starting...\n')
+    return rpt
+
+
+def get_database_connection(environment, db_host):
+    connection = eng.pg_get_connection(host=db_host,
+                                       database=environment,
+                                       username='tro_rw',
+                                       password=f'tro_rw_{environment}')
+    connection.autocommit = True
+    return connection
 
 
 def my_shutdown(rc=0, sysout=None, syserr=None, gword=None):
@@ -55,17 +71,6 @@ def my_shutdown(rc=0, sysout=None, syserr=None, gword=None):
     logging.info("troload is ending...")
     sys.stdout.flush()
     sys.exit(rc)
-
-
-def get_cmdline_args():
-    parser = argparse.ArgumentParser(description="TROLoad")
-    parser.add_argument(
-        "-e", "--environment",
-        required=True,
-        help="Environment - devl, test or prod"
-    )
-    args = parser.parse_args()
-    return args
 
 
 def get_next_file(stage_dir):
@@ -80,15 +85,19 @@ def get_next_file(stage_dir):
     return file_name
 
 
-def process_file(file_name):
-    global connection
+def process_file(file_name, log, rpt, db_conn):
     logging.debug(f'begin process_file({file_name})')
 
-    workbook = openpyxl.load_workbook(filename=file_name)
+    excel_workbook = TransactionWorkbook(file_name, log, rpt, db_conn)
 
-    accts.load_new_accounts_from_workbook(connection, workbook)
-    cat.load_new_categories_from_workbook(connection, workbook)
-    trans.load_transactions_from_workbook(connection, workbook)
+    start_date, end_date = excel_workbook.get_transaction_date_range()
+    log.debug(f'end   get_transaction_date_range - returns {start_date}, {end_date}')
+    rpt.write(f'\nTransactions start date - {start_date}, end date - {end_date}\n')
+
+    trans.mark_tranactions_obsolete(db_conn, start_date, end_date)
+    excel_workbook.load_new_accounts_from_workbook()
+    excel_workbook.load_new_categories_from_workbook()
+    excel_workbook.load_transactions_from_workbook()
 
     new_file_name = f'{file_name}.bkp'
     os.rename(file_name, new_file_name)
@@ -96,26 +105,27 @@ def process_file(file_name):
 
 
 def main():
-    debugpy.listen(5678)
-    debugpy.wait_for_client()
-    config_file = './local/etc/troload.cfg'
-    my_config = config.Config(config_file)
-    log_level = my_config['devl.log_level']
-    home_dir = my_config['devl.home_dir']
+    cmdline_parms = get_cmdline_parms()
 
-    comandline_arguments = get_cmdline_args()
-    environment = comandline_arguments.environment
+    environment = cmdline_parms["environment"]
+    cfgfile_parms = get_cfgfile_parms(environment)
 
-    my_startup(log_level, home_dir, environment)
+    log_level = cfgfile_parms['log_level']
+    log = start_log(log_level)
+
+    home_dir = cfgfile_parms['home_dir']
+    rpt = start_rpt(home_dir)
+
+    db_host = cfgfile_parms['database_host']
+    db_conn = get_database_connection(environment, db_host)
 
     stage_dir = 'local/stage'
     file_name = get_next_file(stage_dir)
-    if file_name is not None:
-        process_file(file_name)
+    if file_name:
+        process_file(file_name, log, rpt, db_conn)
     else:
         logging.info("No new files were found")
         rpt.write("No new files were found\n")
-    sleep(600)
     my_shutdown(0)
 
 

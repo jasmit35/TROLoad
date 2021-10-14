@@ -1,5 +1,4 @@
-
-VERSION := "v0.1.3"
+VERSION := "v0.3.0"
 
 ########################################
 
@@ -17,59 +16,56 @@ ifeq (${ENV}, prod)
         TROHOME := /home/jeff/prod/troload
 endif
 
-DCYAML := ${TROHOME}/docker-compose-${ENV}.yaml
-DCF := docker-compose --file=${DCYAML}
-
 ########################################
 
-echo-env:
-	@echo "Environment = ${ENVIRONMENT}"
-	@echo "TROHOME = ${TROHOME}"
+# echo-env:
+# 	@echo "Environment = ${ENVIRONMENT}"
+# 	@echo "TROHOME = ${TROHOME}"
 
-########################################
+# ########################################
 
-build:
-	docker-compose --file=${DCYAML} build
+# build:
+# 	docker-compose --file=${DCYAML} build
 
-build-full:
-	docker-compose --file=${DCYAML} build --pull --no-cache
+# build-full:
+# 	docker-compose --file=${DCYAML} build --pull --no-cache
 
-run:
-	docker-compose --file=${DCYAML} run \
-	--detach \
-	--name troload \
-	--volume ${HOME}/${ENVIRONMENT}/troload/local/log:/home/container/troload/local/log \
-	--volume ${HOME}/${ENVIRONMENT}/troload/local/rpt:/home/container/troload/local/rpt \
-	--volume ${HOME}/${ENVIRONMENT}/troload/local/stage:/home/container/troload/local/stage \
-	troload \
-	--environment=${ENV}
+# run:
+# 	docker-compose --file=${DCYAML} run \
+# 	--detach \
+# 	--name troload \
+# 	--volume ${HOME}/${ENVIRONMENT}/troload/local/log:/home/container/troload/local/log \
+# 	--volume ${HOME}/${ENVIRONMENT}/troload/local/rpt:/home/container/troload/local/rpt \
+# 	--volume ${HOME}/${ENVIRONMENT}/troload/local/stage:/home/container/troload/local/stage \
+# 	troload \
+# 	--environment=${ENV}
 
-ps:
-	docker-compose --file=${DCYAML} ps -a 
+# ps:
+# 	docker-compose --file=${DCYAML} ps -a 
 
-logs:
-	docker logs troload 
+# logs:
+# 	docker logs troload 
 
-exec:
-	docker-compose --file=${DCYAML} exec troload /bin/bash
+# exec:
+# 	docker-compose --file=${DCYAML} exec troload /bin/bash
 
-stop:
-	docker-compose --file=${DCYAML} stop troload
+# stop:
+# 	docker-compose --file=${DCYAML} stop troload
 
-rm:
-	docker-compose --file=${DCYAML} rm -fv troload
+# rm:
+# 	docker-compose --file=${DCYAML} rm -fv troload
 
 
-########################################
+# ########################################
 
-connect-db:
-	psql -h localhost -p 5432 -d ${ENV} -U postgres
+# connect-db:
+# 	psql -h localhost -p 5432 -d ${ENV} -U postgres
 
-cluster-status:
-	@echo "\nNetworks\n"
-	@docker network ls -f name=tro*
-	@echo "\nVolumes\n"
-	@docker volume ls -f name=tro*
+# cluster-status:
+# 	@echo "\nNetworks\n"
+# 	@docker network ls -f name=tro*
+# 	@echo "\nVolumes\n"
+# 	@docker volume ls -f name=tro*
 #
 # run-load:
 # 	local/bin/runmypy.sh ${TRO_LOCAL}/python/troload.py -e devl >${TRO_LOCAL}/log/troload.log 2>&1

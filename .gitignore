@@ -2,11 +2,11 @@
 .vscode/
 .secrets-db-password
 
-local/log/*.log
+local/log/*
 local/python/__pycache__/*.pyc
 local/python/modules/__pycache__/*.pyc
 local/rpt/*.rpt
-local/stage/*.bkup
+local/stage/*.bkp
 local/tmp/*
 
 samples/*

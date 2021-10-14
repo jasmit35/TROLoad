@@ -4,6 +4,6 @@
 
 Use the standard auto-update to download and install the latest version from github:
 
-`auto-update -a troload`
+`auto-update -e test -a troload`
 
 

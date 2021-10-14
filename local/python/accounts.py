@@ -2,7 +2,6 @@
 accounts
 '''
 import logging as log
-import modules.jsstdrpt as rpt
 
 known_accounts = {}
 
@@ -58,26 +57,3 @@ def add_new_account(connection, account_name):
 
     log.debug(f'end   add_new_account - returns {account_id}')
     return account_id
-
-
-def load_new_accounts_from_workbook(connection, workbook):
-    global known_accounts
-
-    known_accounts = select_all_accounts(connection)
-
-    rpt.write("  The following new accounts have been added:\n")
-
-    sheet = workbook.active
-    for value in sheet.iter_rows(
-        min_row=7, max_row=999,
-        min_col=3, max_col=3,
-        values_only=True,
-    ):
-        account_name = value[0]
-        if account_name is None:
-            continue
-        if account_name in known_accounts.values():
-            continue
-        add_new_account(connection, account_name)
-        rpt.write(f"    {account_name}\n")
-    log.debug('end   load_new_accounts_from_workbook - returns None')

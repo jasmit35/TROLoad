@@ -1,12 +1,11 @@
 # TRO Load User's Guide
 
-This container is currently designed to pick up any spreadsheets (files with a *.xslx extension) from the stage directory. It will pickup and process multiple files. The files are renamed with a .bkp extension after processing.
+This application is currently designed to pick up any spreadsheets (files with a *.xslx extension) from the stage directory. It will pickup and process multiple files. The files are renamed with a .bkp extension after processing.
 
 ## Monthly processing
 You probably want to process more than the previous months data. It depends on if you have recatorized any transactions from prior months. For documentation purposes, we will process the proceding six months.
 
 ### On Ganeymede
-
 
 Run Quicken and select the following options:
 
