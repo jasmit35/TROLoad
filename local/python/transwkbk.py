@@ -1,14 +1,17 @@
 import datetime
-import openpyxl
+import os
+import sys
 
 import accounts
-import transactions
+import openpyxl
 
+p = os.path.abspath("../TRO/local/python")
+sys.path.insert(1, p)
 from categories import CategoriesTable
 from transactions import Transaction, TransactionsTable
 
 
-class TransactionWorkbook():
+class TransactionWorkbook:
     def __init__(self, file_name, log, rpt, db_conn) -> None:
         self.workbook = openpyxl.load_workbook(filename=file_name)
         self.log = log
@@ -16,11 +19,13 @@ class TransactionWorkbook():
         self.db_conn = db_conn
 
     def get_transaction_date_range(self):
-        self.log.debug('begin get_transaction_date_range()')
+        self.log.debug("begin get_transaction_date_range()")
         sheet = self.workbook.active
         for transaction in sheet.iter_rows(
-            min_row=3, max_row=3,
-            min_col=1, max_col=1,
+            min_row=3,
+            max_row=3,
+            min_col=1,
+            max_col=1,
             values_only=True,
         ):
             date_label = list(transaction)[0].split()
@@ -35,8 +40,10 @@ class TransactionWorkbook():
 
         sheet = self.workbook.active
         for transaction in sheet.iter_rows(
-            min_row=7, max_row=999,
-            min_col=3, max_col=3,
+            min_row=7,
+            max_row=999,
+            min_col=3,
+            max_col=3,
             values_only=True,
         ):
             account_name = transaction[0]
@@ -46,7 +53,7 @@ class TransactionWorkbook():
                 continue
             accounts.add_new_account(self.db_conn, account_name)
             self.rpt.write(f"    {account_name}\n")
-        self.log.debug('end   load_new_accounts_from_workbook - returns None')
+        self.log.debug("end   load_new_accounts_from_workbook - returns None")
 
     def load_new_categories_from_workbook(self):
         categories_dict = CategoriesTable(self.db_conn)
@@ -56,8 +63,10 @@ class TransactionWorkbook():
         self.rpt.write("\n\n  The following new categrories have been added:\n")
 
         for transaction in sheet.iter_rows(
-            min_row=5, max_row=999,
-            min_col=7, max_col=7,
+            min_row=5,
+            max_row=999,
+            min_col=7,
+            max_col=7,
             values_only=True,
         ):
             cat_name = transaction[0]
@@ -92,11 +101,7 @@ class TransactionWorkbook():
 
         self.rpt.write("\n\n  The following transactions have been added:\n")
 
-        for transaction in sheet.iter_rows(
-            min_row=8, max_row=999,
-            min_col=2, max_col=12,
-            values_only=True
-        ):
+        for transaction in sheet.iter_rows(min_row=8, max_row=999, min_col=2, max_col=12, values_only=True):
             if self.invalid_trans(transaction):
                 continue
 
@@ -108,7 +113,7 @@ class TransactionWorkbook():
                 account_id = previous_account_id
 
             transaction_date_string = str(transaction[0])
-            if transaction_date_string == 'None':
+            if transaction_date_string == "None":
                 transaction_date_string = previous_transaction_date_string
             else:
                 previous_transaction_date_string = transaction_date_string
@@ -132,15 +137,15 @@ class TransactionWorkbook():
             else:
                 this_trans.description = previous_description
 
-
-
             this_trans.memo = transaction[4]
             this_trans.tax_item = transaction[8]
 
-            transaction_id = transactions.get_transaction_id(self.db_conn, account_id, transaction_date, category_id, amount)
+            transaction_id = trans_tab.get_transaction_id(
+                self.db_conn, account_id, transaction_date, category_id, amount
+            )
 
             if transaction_id is None:
                 trans_tab.insert_transaction(this_trans)
                 self.rpt.write(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
             else:
-                transactions.update_transaction(self.db_conn, transaction_id, transaction)
+                trans_tab.update_transaction(self.db_conn, transaction_id, transaction)

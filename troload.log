@@ -1,0 +1,35 @@
+2021-10-30 00:50:01 begin make_std_out_dir(/Users/jeff/devl/troload/local/rpt)
+2021-10-30 00:50:01 end   make_std_out_dir - returns /Users/jeff/devl/troload/local/rpt
+2021-10-30 00:50:01 begin start_std_rpt(/Users/jeff/devl/troload/local/rpt, TROLoad, %Y_%m_%d_%H_%M)
+2021-10-30 00:50:01 end   start_std_rpt - returns None
+2021-10-30 01:05:02 begin make_std_out_dir(/Users/jeff/devl/troload/local/rpt)
+2021-10-30 01:05:02 end   make_std_out_dir - returns /Users/jeff/devl/troload/local/rpt
+2021-10-30 01:05:02 begin start_std_rpt(/Users/jeff/devl/troload/local/rpt, TROLoad, %Y_%m_%d_%H_%M)
+2021-10-30 01:05:02 end   start_std_rpt - returns None
+2021-10-30 08:05:01 begin make_std_out_dir(/Users/jeff/devl/troload/local/rpt)
+2021-10-30 08:05:01 end   make_std_out_dir - returns /Users/jeff/devl/troload/local/rpt
+2021-10-30 08:05:01 begin start_std_rpt(/Users/jeff/devl/troload/local/rpt, TROLoad, %Y_%m_%d_%H_%M)
+2021-10-30 08:05:01 end   start_std_rpt - returns None
+2021-10-30 09:15:12 begin make_std_out_dir(/Users/jeff/devl/troload/local/rpt)
+2021-10-30 09:15:12 end   make_std_out_dir - returns /Users/jeff/devl/troload/local/rpt
+2021-10-30 09:15:12 begin start_std_rpt(/Users/jeff/devl/troload/local/rpt, TROLoad, %Y_%m_%d_%H_%M)
+2021-10-30 09:15:12 end   start_std_rpt - returns None
+2021-10-30 09:18:51 begin make_std_out_dir(/Users/jeff/devl/troload/local/rpt)
+2021-10-30 09:18:51 end   make_std_out_dir - returns /Users/jeff/devl/troload/local/rpt
+2021-10-30 09:18:51 begin start_std_rpt(/Users/jeff/devl/troload/local/rpt, TROLoad, %Y_%m_%d_%H_%M)
+2021-10-30 09:18:51 end   start_std_rpt - returns None
+2021-10-30 09:20:24 begin make_std_out_dir(/Users/jeff/devl/troload/local/rpt)
+2021-10-30 09:20:24 end   make_std_out_dir - returns /Users/jeff/devl/troload/local/rpt
+2021-10-30 09:20:24 begin start_std_rpt(/Users/jeff/devl/troload/local/rpt, TROLoad, %Y_%m_%d_%H_%M)
+2021-10-30 09:20:24 end   start_std_rpt - returns None
+2021-10-30 09:22:19 begin make_std_out_dir(/Users/jeff/devl/troload/local/rpt)
+2021-10-30 09:22:19 end   make_std_out_dir - returns /Users/jeff/devl/troload/local/rpt
+2021-10-30 09:22:19 begin start_std_rpt(/Users/jeff/devl/troload/local/rpt, TROLoad, %Y_%m_%d_%H_%M)
+2021-10-30 09:22:19 end   start_std_rpt - returns None
+2021-10-30 09:22:52 begin pg_get_connection(localhost, devl, tro_rw)
+2021-10-30 09:22:52 end   pg_get_connection - returns <connection object at 0x109f38820; dsn: 'user=tro_rw password=xxx dbname=devl host=localhost port=5432', closed: 0>
+2021-10-30 09:22:52 begin get_next_file(local/stage)
+2021-10-30 09:22:52 end   get_next_file - retuns None
+2021-10-30 09:22:52 No new files were found
+2021-10-30 09:22:52 end   finish_std_rpt - returns None 
+2021-10-30 09:22:52 troload is ending...
