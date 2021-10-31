@@ -9,13 +9,17 @@ import sys
 
 import config
 from dotenv import load_dotenv
+
+#  from this applicaiton
 from transwkbk import TransactionWorkbook
 
+#  from my standard modules (../local/python)
 p = os.path.abspath("../local/python")
 sys.path.insert(1, p)
-import modules.jspgeng as eng
-import modules.jsstdrpt as rpt
+import jspgeng as eng
+import jsstdrpt as rpt
 
+#  from the TRO application
 p = os.path.abspath("../TRO/local/python")
 sys.path.insert(1, p)
 from transactions import TransactionsTable
@@ -63,9 +67,10 @@ def start_rpt(home_dir):
 def get_database_connection(environment):
     load_dotenv("local/etc/db_secrets.env")
     host_name = os.getenv(f"{environment}_DB_HOST".upper())
-    connection = eng.pg_get_connection(
-        host=host_name, database=environment, username="tro_rw", password=f"tro_rw_{environment}"
-    )
+    database = os.getenv(f"{environment}_DB_DATABASE".upper())
+    username = os.getenv(f"{environment}_DB_USERNAME".upper())
+    password = os.getenv(f"{environment}_DB_PASSWORD".upper())
+    connection = eng.pg_get_connection(host=host_name, database=database, username=username, password=password)
     connection.autocommit = True
     return connection
 
@@ -122,7 +127,6 @@ def main():
     home_dir = cfgfile_parms["home_dir"]
     rpt = start_rpt(home_dir)
 
-    db_host = cfgfile_parms["database_host"]
     db_conn = get_database_connection(environment)
 
     stage_dir = "local/stage"

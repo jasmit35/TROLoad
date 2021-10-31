@@ -2,11 +2,11 @@ import datetime
 import os
 import sys
 
-import accounts
 import openpyxl
 
 p = os.path.abspath("../TRO/local/python")
 sys.path.insert(1, p)
+from accounts import AccountsTable
 from categories import CategoriesTable
 from transactions import Transaction, TransactionsTable
 
@@ -34,7 +34,8 @@ class TransactionWorkbook:
         return start_date, end_date
 
     def load_new_accounts_from_workbook(self):
-        known_accounts = accounts.select_all_accounts(self.db_conn)
+        accounts_table = AccountsTable(self.db_conn)
+        known_accounts = accounts_table.select_all_accounts()
 
         self.rpt.write("  The following new accounts have been added:\n")
 
@@ -51,9 +52,8 @@ class TransactionWorkbook:
                 continue
             if account_name in known_accounts.values():
                 continue
-            accounts.add_new_account(self.db_conn, account_name)
+            accounts_table.insert_name(account_name)
             self.rpt.write(f"    {account_name}\n")
-        self.log.debug("end   load_new_accounts_from_workbook - returns None")
 
     def load_new_categories_from_workbook(self):
         categories_dict = CategoriesTable(self.db_conn)
@@ -89,6 +89,7 @@ class TransactionWorkbook:
         return False
 
     def load_transactions_from_workbook(self):
+        accounts_table = AccountsTable(self.db_conn)
         categories_dict = CategoriesTable(self.db_conn)
         trans_tab = TransactionsTable(self.db_conn)
         sheet = self.workbook.active
@@ -107,7 +108,7 @@ class TransactionWorkbook:
 
             account_name = transaction[1]
             if account_name:
-                account_id = accounts.get_account_id(account_name)
+                account_id = accounts_table.get_id(account_name)
                 previous_account_id = account_id
             else:
                 account_id = previous_account_id
@@ -140,12 +141,10 @@ class TransactionWorkbook:
             this_trans.memo = transaction[4]
             this_trans.tax_item = transaction[8]
 
-            transaction_id = trans_tab.get_transaction_id(
-                self.db_conn, account_id, transaction_date, category_id, amount
-            )
+            transaction_id = trans_tab.get_transaction_id(account_id, transaction_date, category_id, amount)
 
             if transaction_id is None:
                 trans_tab.insert_transaction(this_trans)
                 self.rpt.write(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
             else:
-                trans_tab.update_transaction(self.db_conn, transaction_id, transaction)
+                trans_tab.update_transaction(transaction_id, transaction)
