@@ -313,3 +313,10 @@
 2021-10-31 13:15:03 end   process_file - returns None
 2021-10-31 13:15:03 end   finish_std_rpt - returns None 
 2021-10-31 13:15:03 troload is ending...
+2021-11-23 18:38:59 begin start_std_rpt(/Users/jeff/devl/troload, troload, %Y_%m_%d_%H_%M)
+2021-11-23 18:38:59 end   start_std_rpt - returns None
+2021-11-23 20:43:04 begin start_std_rpt(/Users/jeff/devl/troload, troload, %Y_%m_%d_%H_%M)
+2021-11-23 20:43:04 end   start_std_rpt - returns None
+2021-11-23 20:43:04 begin get_next_file(stage_dir='local/stage')
+2021-11-23 20:43:04 end   get_next_file - retuns file_name=None
+2021-11-23 20:43:04 No new files were found
