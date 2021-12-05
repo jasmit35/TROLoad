@@ -4,11 +4,10 @@
 
 **/*.env
 **/*.log
+**/*.pyc
 **/*.rpt
 
 local/log/*
-local/python/__pycache__/*.pyc
-local/python/modules/__pycache__/*.pyc
 local/stage/*.bkp
 local/tmp/*
 

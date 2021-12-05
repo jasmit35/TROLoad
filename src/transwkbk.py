@@ -12,14 +12,12 @@ from transactions import Transaction, TransactionsTable
 
 
 class TransactionWorkbook:
-    def __init__(self, file_name, log, rpt, db_conn) -> None:
+    def __init__(self, this_app, file_name) -> None:
+        self.this_app = this_app
         self.workbook = openpyxl.load_workbook(filename=file_name)
-        self.log = log
-        self.rpt = rpt
-        self.db_conn = db_conn
 
     def get_transaction_date_range(self):
-        self.log.debug("begin get_transaction_date_range()")
+        self.this_app.debug("begin get_transaction_date_range()")
         sheet = self.workbook.active
         for transaction in sheet.iter_rows(
             min_row=3,
@@ -31,13 +29,14 @@ class TransactionWorkbook:
             date_label = list(transaction)[0].split()
             start_date = date_label[0]
             end_date = date_label[2]
+        self.this_app.debug(f"end  get_transaction_date_range - returns {start_date=}, {end_date=}")
         return start_date, end_date
 
     def load_new_accounts_from_workbook(self):
-        accounts_table = AccountsTable(self.db_conn)
+        accounts_table = AccountsTable(self.this_app.db_conn)
         known_accounts = accounts_table.select_all_accounts()
 
-        self.rpt.write("  The following new accounts have been added:\n")
+        self.this_app.write("  The following new accounts have been added:\n")
 
         sheet = self.workbook.active
         for transaction in sheet.iter_rows(
@@ -53,14 +52,14 @@ class TransactionWorkbook:
             if account_name in known_accounts.values():
                 continue
             accounts_table.insert_name(account_name)
-            self.rpt.write(f"    {account_name}\n")
+            self.this_app.write(f"    {account_name}\n")
 
     def load_new_categories_from_workbook(self):
-        categories_dict = CategoriesTable(self.db_conn)
+        categories_dict = CategoriesTable(self.this_app.db_conn)
 
         sheet = self.workbook.active
 
-        self.rpt.write("\n\n  The following new categrories have been added:\n")
+        self.this_app.write("\n\n  The following new categrories have been added:\n")
 
         for transaction in sheet.iter_rows(
             min_row=5,
@@ -75,7 +74,7 @@ class TransactionWorkbook:
                 cat_id = categories_dict.get_id(cat_name)
                 if cat_id == 0:
                     categories_dict.add_category(cat_name)
-                    self.rpt.write(f"    {cat_name}\n")
+                    self.this_app.write(f"    {cat_name}\n")
 
     def invalid_trans(self, trans):
         category = trans[5]
@@ -89,9 +88,9 @@ class TransactionWorkbook:
         return False
 
     def load_transactions_from_workbook(self):
-        accounts_table = AccountsTable(self.db_conn)
-        categories_dict = CategoriesTable(self.db_conn)
-        trans_tab = TransactionsTable(self.db_conn)
+        accounts_table = AccountsTable(self.this_app.db_conn)
+        categories_dict = CategoriesTable(self.this_app.db_conn)
+        trans_tab = TransactionsTable(self.this_app.db_conn)
         sheet = self.workbook.active
 
         #  The spreadsheet we are loading from does not repeat all transactions for split transactions.
@@ -100,7 +99,7 @@ class TransactionWorkbook:
         previous_account_id = 0
         previous_description = ""
 
-        self.rpt.write("\n\n  The following transactions have been added:\n")
+        self.this_app.write("\n\n  The following transactions have been added:\n")
 
         for transaction in sheet.iter_rows(min_row=8, max_row=999, min_col=2, max_col=12, values_only=True):
             if self.invalid_trans(transaction):
@@ -145,6 +144,6 @@ class TransactionWorkbook:
 
             if transaction_id is None:
                 trans_tab.insert_transaction(this_trans)
-                self.rpt.write(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
+                self.this_app.write(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
             else:
                 trans_tab.update_transaction(transaction_id, transaction)
