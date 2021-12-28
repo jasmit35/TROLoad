@@ -1,13 +1,14 @@
-.DS_Store
-.vscode/
-.secrets-db-password
+
+**/.DS_Store
 
 **/*.env
 **/*.log
 **/*.pyc
 **/*.rpt
 
+.secrets-db-password
+.vscode/
 local/log/*
 local/stage/*.bkp
 local/tmp/*
-
+src/__pycache__/

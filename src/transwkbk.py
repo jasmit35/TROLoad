@@ -17,7 +17,7 @@ class TransactionWorkbook:
         self.workbook = openpyxl.load_workbook(filename=file_name)
 
     def get_transaction_date_range(self):
-        self.this_app.debug("begin get_transaction_date_range()")
+        self.this_app.info("begin get_transaction_date_range()")
         sheet = self.workbook.active
         for transaction in sheet.iter_rows(
             min_row=3,
@@ -36,7 +36,7 @@ class TransactionWorkbook:
         accounts_table = AccountsTable(self.this_app.db_conn)
         known_accounts = accounts_table.select_all_accounts()
 
-        self.this_app.write("  The following new accounts have been added:\n")
+        self.this_app.output("  The following new accounts have been added:\n")
 
         sheet = self.workbook.active
         for transaction in sheet.iter_rows(
@@ -52,14 +52,14 @@ class TransactionWorkbook:
             if account_name in known_accounts.values():
                 continue
             accounts_table.insert_name(account_name)
-            self.this_app.write(f"    {account_name}\n")
+            self.this_app.output(f"    {account_name}\n")
 
     def load_new_categories_from_workbook(self):
         categories_dict = CategoriesTable(self.this_app.db_conn)
 
         sheet = self.workbook.active
 
-        self.this_app.write("\n\n  The following new categrories have been added:\n")
+        self.this_app.output("\n\n  The following new categrories have been added:\n")
 
         for transaction in sheet.iter_rows(
             min_row=5,
@@ -74,7 +74,7 @@ class TransactionWorkbook:
                 cat_id = categories_dict.get_id(cat_name)
                 if cat_id == 0:
                     categories_dict.add_category(cat_name)
-                    self.this_app.write(f"    {cat_name}\n")
+                    self.this_app.output(f"    {cat_name}\n")
 
     def invalid_trans(self, trans):
         category = trans[5]
@@ -99,7 +99,7 @@ class TransactionWorkbook:
         previous_account_id = 0
         previous_description = ""
 
-        self.this_app.write("\n\n  The following transactions have been added:\n")
+        self.this_app.output("\n\n  The following transactions have been added:\n")
 
         for transaction in sheet.iter_rows(min_row=8, max_row=999, min_col=2, max_col=12, values_only=True):
             if self.invalid_trans(transaction):
@@ -144,6 +144,6 @@ class TransactionWorkbook:
 
             if transaction_id is None:
                 trans_tab.insert_transaction(this_trans)
-                self.this_app.write(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
+                self.this_app.output(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
             else:
                 trans_tab.update_transaction(transaction_id, transaction)
