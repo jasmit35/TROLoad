@@ -1,6 +1,6 @@
-'''
+"""
 transwkbk.py - Excel workbook of transaction produced by Quicken.
-'''
+"""
 import datetime
 import os
 import sys
@@ -30,7 +30,7 @@ class TransactionWorkbook:
         self.this_app = this_app
         self.workbook = openpyxl.load_workbook(filename=file_name)
 
-#  ----------------------------------------------------------------------
+    #  ----------------------------------------------------------------------
     def get_transaction_date_range(self):
         self.this_app.info("begin get_transaction_date_range()")
         sheet = self.workbook.active
@@ -95,7 +95,7 @@ class TransactionWorkbook:
                     cat_id = cat_tab.insert_category(cat_name)
                     cat_tab.buffered_categories[cat_name] = cat_id
 
-#  ----------------------------------------------------------------------
+    #  ----------------------------------------------------------------------
     def invalid_trans(self, trans):
         category = trans[category_col]
         if category is None:
@@ -118,8 +118,8 @@ class TransactionWorkbook:
         #  Theirfore it is necessary to retain the previous transactions.
         previous_transaction_date_string = "1960-01-12 00:00:00"
         previous_account_id = 0
-        previous_account_name = ''
-        previous_description = ''
+        previous_account_name = ""
+        previous_description = ""
 
         self.this_app.output("\n\n    The following transactions have been added:\n")
 

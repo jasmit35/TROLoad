@@ -22,7 +22,6 @@ from transwkbk import TransactionWorkbook
 
 #  =============================================================================
 class TroLoadApp(BaseApp):
-
     def __init__(self, app_name, version):
         super().__init__(app_name, version)
         self.db_conn = get_database_connection(self.environment)
@@ -31,7 +30,10 @@ class TroLoadApp(BaseApp):
     def set_cmdline_params(self):
         parser = ArgumentParser(description="TROLoad")
         parser.add_argument(
-            "-e", "--environment", required=True, help="Environment - devl, test or prod"
+            "-e",
+            "--environment",
+            required=True,
+            help="Environment - devl, test or prod",
         )
         parser.add_argument(
             "-c",
@@ -45,7 +47,7 @@ class TroLoadApp(BaseApp):
 
     #  -----------------------------------------------------------------------------
     def process(self):
-        self.info('begin process()')
+        self.info("begin process()")
 
         stage_dir = "local/stage"
         file_name = self.get_next_file(stage_dir)
