@@ -46,20 +46,25 @@ class TroLoadApp(BaseApp):
     #  -----------------------------------------------------------------------------
     def process(self):
         self.info('begin process()')
-        rc = 0
+
         stage_dir = "local/stage"
         file_name = self.get_next_file(stage_dir)
-        while file_name:
-            rc = self.process_file(file_name)
-            file_name = self.get_next_file(stage_dir)
+        if file_name is None:
+            rc = 128
+            self.info("No files were found to process.")
+            self.output("No files were found to process.")
         else:
-            self.output('No more files were found')
+            while file_name:
+                rc = self.process_file(file_name)
+                file_name = self.get_next_file(stage_dir)
+
         self.info(f"end  process - returns {rc=}")
         return rc
 
     #  -----------------------------------------------------------------------------
     def get_next_file(self, stage_dir):
         self.info(f"begin get_next_file({stage_dir=})")
+
         file_name = None
 
         my_path = str(f"{stage_dir}/*.xlsx")
@@ -71,7 +76,8 @@ class TroLoadApp(BaseApp):
 
     #  -----------------------------------------------------------------------------
     def process_file(self, file_name):
-        self.info(f"begin process_file({file_name})")
+        self.info(f"begin process_file({file_name=})")
+
         self.output(f"  processing file {file_name}\n")
 
         tran_tab = TransactionsTable(self.db_conn)
@@ -81,7 +87,8 @@ class TroLoadApp(BaseApp):
         start_date, end_date = excel_workbook.get_transaction_date_range()
         self.output(f"   Transactions start date - {start_date}, end date - {end_date}\n")
 
-        tran_tab.mark_tranactions_obsolete(start_date, end_date)
+        row_count = tran_tab.mark_tranactions_obsolete(start_date, end_date)
+        self.debug(f"{row_count} rows were marked obsolete.")
 
         excel_workbook.load_new_accounts_from_workbook()
         excel_workbook.load_new_categories_from_workbook()
@@ -89,7 +96,9 @@ class TroLoadApp(BaseApp):
 
         new_file_name = f"{file_name}.bkp"
         os.rename(file_name, new_file_name)
+
         self.info(f"end   process_file - returns {rc=}")
+        return rc
 
 
 if __name__ == "__main__":
