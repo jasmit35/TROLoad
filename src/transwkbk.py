@@ -67,9 +67,9 @@ class TransactionWorkbook:
             if account_name:
                 account_id = accounts_table.get_id(account_name, False)
                 if account_id is None:
-                    self.this_app.output(f"      {account_name}")
                     account_id = accounts_table.insert_name(account_name)
                     accounts_table.existing_accounts[account_name] = account_id
+                    self.this_app.output(f"      {account_id}  {account_name}\n")
 
     #  ----------------------------------------------------------------------
     def load_new_categories_from_workbook(self):
@@ -164,10 +164,5 @@ class TransactionWorkbook:
             this_trans.memo = transaction[memo_col]
             this_trans.tax_item = transaction[tax_col]
 
-            transaction_id = trans_tab.get_transaction_id(account_id, transaction_date, category_id, amount)
-
-            if transaction_id is None:
-                trans_tab.insert_transaction(this_trans)
-                self.this_app.output(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
-            else:
-                trans_tab.update_transaction(transaction_id, transaction)
+            trans_tab.insert_transaction(this_trans)
+            self.this_app.output(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")

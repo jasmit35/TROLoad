@@ -90,7 +90,7 @@ class TroLoadApp(BaseApp):
         self.output(f"   Transactions start date - {start_date}, end date - {end_date}\n")
 
         row_count = tran_tab.mark_tranactions_obsolete(start_date, end_date)
-        self.debug(f"{row_count} rows were marked obsolete.")
+        self.debug(f"{row_count} rows were deleted.")
 
         excel_workbook.load_new_accounts_from_workbook()
         excel_workbook.load_new_categories_from_workbook()
