@@ -42,8 +42,8 @@ class TransactionWorkbook:
             values_only=True,
         ):
             date_label = list(transaction)[0].split()
-            start_date = date_label[0]
-            end_date = date_label[2]
+            start_date = date_label[3]
+            end_date = date_label[5]
         self.this_app.debug(f"end  get_transaction_date_range - returns {start_date=}, {end_date=}")
         return start_date, end_date
 
@@ -123,7 +123,7 @@ class TransactionWorkbook:
 
         self.this_app.output("\n\n    The following transactions have been added:\n")
 
-        for transaction in sheet.iter_rows(min_row=9, max_row=9999, min_col=1, max_col=11, values_only=True):
+        for transaction in sheet.iter_rows(min_row=10, max_row=9999, min_col=1, max_col=11, values_only=True):
             if self.invalid_trans(transaction):
                 continue
 
@@ -165,4 +165,4 @@ class TransactionWorkbook:
             this_trans.tax_item = transaction[tax_col]
 
             trans_tab.insert_transaction(this_trans)
-            self.this_app.output(f"    {account_name}, {transaction_date}, {category_name}, {amount}\n")
+            self.this_app.output(f"      {account_name}, {transaction_date}, {category_name}, {amount}\n")

@@ -87,7 +87,7 @@ class TroLoadApp(BaseApp):
 
         rc = 0
         start_date, end_date = excel_workbook.get_transaction_date_range()
-        self.output(f"   Transactions start date - {start_date}, end date - {end_date}\n")
+        self.output(f"    Transactions start date - {start_date}, end date - {end_date}\n")
 
         row_count = tran_tab.mark_tranactions_obsolete(start_date, end_date)
         self.debug(f"{row_count} rows were deleted.")
