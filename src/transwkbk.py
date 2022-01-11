@@ -123,7 +123,7 @@ class TransactionWorkbook:
 
         self.this_app.output("\n\n    The following transactions have been added:\n")
 
-        for transaction in sheet.iter_rows(min_row=10, max_row=9999, min_col=1, max_col=11, values_only=True):
+        for transaction in sheet.iter_rows(min_row=9, max_row=9999, min_col=1, max_col=11, values_only=True):
             if self.invalid_trans(transaction):
                 continue
 
