@@ -29,6 +29,7 @@ class TransactionWorkbook:
     def __init__(self, this_app, file_name) -> None:
         self.this_app = this_app
         self.workbook = openpyxl.load_workbook(filename=file_name)
+        self.end_of_transactions_label = None
 
     #  ----------------------------------------------------------------------
     def get_transaction_date_range(self):
@@ -44,6 +45,7 @@ class TransactionWorkbook:
             date_label = list(transaction)[0].split()
             start_date = date_label[3]
             end_date = date_label[5]
+            self.end_of_transactions_label = f"{start_date} - {end_date}"
         self.this_app.debug(f"end  get_transaction_date_range - returns {start_date=}, {end_date=}")
         return start_date, end_date
 
@@ -124,6 +126,9 @@ class TransactionWorkbook:
         self.this_app.output("\n\n    The following transactions have been added:\n")
 
         for transaction in sheet.iter_rows(min_row=9, max_row=9999, min_col=1, max_col=11, values_only=True):
+            if transaction[0] == self.end_of_transactions_label:
+                break
+
             if self.invalid_trans(transaction):
                 continue
 
@@ -145,7 +150,10 @@ class TransactionWorkbook:
             transaction_date = datetime.date.fromisoformat(iso_date_string)
 
             category_name = transaction[category_col]
-            category_id = categories_dict.get_id(category_name)
+            if category_name:
+                category_id = categories_dict.get_id(category_name)
+            else:
+                category_id = 0
 
             amount = transaction[amount_col]
 

@@ -79,7 +79,6 @@ class TroLoadApp(BaseApp):
     #  -----------------------------------------------------------------------------
     def process_file(self, file_name):
         self.info(f"begin process_file({file_name=})")
-
         self.output(f"  processing file {file_name}\n")
 
         tran_tab = TransactionsTable(self.db_conn)
