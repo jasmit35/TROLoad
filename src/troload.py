@@ -89,11 +89,12 @@ class TroLoadApp(BaseApp):
         self.output(f"    Transactions start date - {start_date}, end date - {end_date}\n")
 
         row_count = tran_tab.mark_tranactions_obsolete(start_date, end_date)
-        self.debug(f"{row_count} rows were deleted.")
+        if row_count > 0:
+            self.output(f"    {row_count} existing rows in that date range were deleted.")
 
         excel_workbook.load_new_accounts_from_workbook()
         excel_workbook.load_new_categories_from_workbook()
-        excel_workbook.load_transactions_from_workbook()
+        rc = excel_workbook.load_transactions_from_workbook()
 
         new_file_name = f"{file_name}.bkp"
         os.rename(file_name, new_file_name)
