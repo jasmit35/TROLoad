@@ -1,16 +1,20 @@
 
 **/.DS_Store
+**/*.pyc
 
-**/*.env
 **/*.err
 **/*.log
 **/*.out
-**/*.pyc
 **/*.rpt
+
+**/*.env
+**/*.doc
+**/*.pdf
 **/*.xlsx
 
 .secrets-db-password
 .vscode/
+
 local/stage/*.bkp
 local/tmp/*
-src/__pycache__/
+local/python/__pycache__/

@@ -49,7 +49,7 @@ class TroLoadApp(BaseApp):
     def process(self):
         self.info("begin process()")
 
-        stage_dir = "local/stage"
+        stage_dir = self.cfgfile_params.get("stage_dir", "local/stage")
         file_name = self.get_next_file(stage_dir)
         if file_name is None:
             rc = 128

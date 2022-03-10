@@ -190,12 +190,17 @@ class TransactionWorkbook:
                 category_name = "Bought"
             if transaction[number_col] == "Removed":
                 category_name = "Removed"
+            if transaction[number_col] == "StkSplit":
+                category_name = "Stock Split"
+            if transaction[number_col] == "Sold":
+                category_name = "Sold"
 
         category_id = self.categories_table.get_id(category_name, False)
 
         if category_id is None:
             raise InvalidTransactionException(
-                transaction, f"This transaction has an invalid category - '{category_name}'"
+                transaction,
+                f"This transaction has an invalid category - '{category_name}'",
             )
 
         return category_id
