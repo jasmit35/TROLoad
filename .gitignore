@@ -8,7 +8,7 @@
 **/*.rpt
 
 **/*.env
-**/*.doc
+**/*.docx
 **/*.pdf
 **/*.xlsx
 

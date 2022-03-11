@@ -2,7 +2,7 @@
 
 ## Steps to upgrade Test and Prod environments to a new version.
 
-### Hide the existing version
+### Hide the existing version:
 
 `cd ~/test/troload`
 
@@ -11,7 +11,7 @@
 `mv * .old`
 
 
-Use the standard auto-update to download and install the latest version from github:
+### Use the standard auto-update to download and install the latest version from github:
 
 `export ENVIRONMENT=devl`
 
