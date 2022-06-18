@@ -16,7 +16,7 @@ Run Quicken and select the following options:
 Modify the dates to inclusde the previous six months.
 Generate the report.
 
-Click the icon and chose to exprt to excel workbook.
+Click the icon and chose to export to excel workbook.
 
 Save the spreadsheet to the shared space on Synology.
 
