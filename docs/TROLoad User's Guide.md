@@ -2,6 +2,25 @@
 
 This application is currently designed to pick up any spreadsheets (files with a *.xslx extension) from the stage directory. It will pickup and process multiple files. The files are renamed with a .bkp extension after processing. (The stage directory can be overridden by setting a parameter in the configuration file.)
 
+## Setup for initial load
+Their are initial values that need to be loaded before the first data from Quicken. Execute the following to do so:
+
+For the devl environment:
+
+```
+cd /Users/jeff/devl/TROLoad/local/sql
+psql -h localhost -p 5430 -d devl -U postgres
+```
+
+For all environments:
+
+```
+\i grant_permsissions.sql
+\i set_start.sql
+\i set_beginning_balances.sql
+\q
+```
+
 ## Monthly processing
 You probably want to process more than the previous months data. It depends on if you have recatorized any transactions from prior months. For documentation purposes, we will process the proceding six months.
 
