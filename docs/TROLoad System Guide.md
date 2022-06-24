@@ -29,5 +29,13 @@ rm -rf .old_2021*
 export ENVIRONMENT=test
 auto-update -e test -a troload
 ```
+### Update .db_secrets.env
+The secrets files are not stored on GitHub because the contain user names and passwords. You need to manually copy the files:
+
+```
+cd /Users/jeff/test/TROLoad/local/etc
+cp /Users/jeff/devl/TROLoad/local/etc/.db_secrets.env .
+```
+
 
 
