@@ -5,18 +5,25 @@ This application is currently designed to pick up any spreadsheets (files with a
 ## Setup for initial load
 Their are initial values that need to be loaded before the first data from Quicken. Execute the following to do so:
 
-### For the devl environment:
+### For the Devl environment:
 
 ```
 cd /Users/jeff/devl/TROLoad/local/sql
 psql -h localhost -p 5430 -d devl -U postgres
 ```
 
-### For the test environment:
+### For the Test environment:
 
 ```
 cd /Users/jeff/test/TROLoad/local/sql
 psql -h localhost -p 5432 -d test -U postgres
+```
+
+### For the Prod environment:
+
+```
+cd /Users/jeff/prod/TROLoad/local/sql
+psql -h kmaster -p 5432 -d prod -U postgres
 ```
 
 ### For all environments:
