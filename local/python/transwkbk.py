@@ -102,6 +102,19 @@ class TransactionWorkbook:
     #  ----------------------------------------------------------------------
     #  Check that the required fields are present, if not abort
     def validate_transaction(self, trans):
+        """_summary_
+
+        Args:
+            trans (_type_): _description_
+
+        Raises:
+            InvalidTransactionException: _description_
+            InvalidTransactionException: _description_
+        """
+
+        date_str = trans[trans_date_col]
+        if "BALANCE" in date_str:
+            raise InvalidTransactionException(trans, f"This transaction does not have a valid date - {date_str}")
 
         amount = trans[amount_col]
         if amount is None:
@@ -124,7 +137,7 @@ class TransactionWorkbook:
 
         rc = 0
 
-        for transaction in sheet.iter_rows(min_row=9, max_row=9999, min_col=1, max_col=11, values_only=True):
+        for transaction in sheet.iter_rows(min_row=8, max_row=9999, min_col=1, max_col=11, values_only=True):
             if transaction[1] == self.end_of_transactions_label:
                 break
 
