@@ -61,7 +61,7 @@ class TransactionWorkbook:
 
         for transaction in sheet.iter_rows(
             min_row=7,
-            max_row=999,
+            max_row=99999,
             min_col=3,
             max_col=3,
             values_only=True,
@@ -84,7 +84,7 @@ class TransactionWorkbook:
 
         for transaction in sheet.iter_rows(
             min_row=6,
-            max_row=9999,
+            max_row=99999,
             min_col=7,
             max_col=7,
             values_only=True,
@@ -102,18 +102,22 @@ class TransactionWorkbook:
     #  ----------------------------------------------------------------------
     #  Check that the required fields are present, if not abort
     def validate_transaction(self, trans):
-        """_summary_
+        """
+        Checks a transaction record to make sure certain fields are valid,
+        otherwise raise an exception.
 
         Args:
             trans (_type_): _description_
 
         Raises:
-            InvalidTransactionException: _description_
-            InvalidTransactionException: _description_
+            InvalidTransactionException:
         """
 
-        date_str = trans[trans_date_col]
+        date_str = str(trans[trans_date_col])
+
         if "BALANCE" in date_str:
+            raise InvalidTransactionException(trans, f"This transaction does not have a valid date - {date_str}")
+        if "Date" in date_str:
             raise InvalidTransactionException(trans, f"This transaction does not have a valid date - {date_str}")
 
         amount = trans[amount_col]
@@ -122,6 +126,13 @@ class TransactionWorkbook:
 
     #  ----------------------------------------------------------------------
     def load_transactions_from_workbook(self):
+        """
+        Read each row of the spreadsheet and turn it into a transaction
+        record.
+
+        Returns:
+            _type_: _description_
+        """
         accounts_table = AccountsTable(self.this_app.db_conn)
         trans_tab = TransactionsTable(self.this_app.db_conn)
         sheet = self.workbook.active
@@ -137,7 +148,7 @@ class TransactionWorkbook:
 
         rc = 0
 
-        for transaction in sheet.iter_rows(min_row=8, max_row=9999, min_col=1, max_col=11, values_only=True):
+        for transaction in sheet.iter_rows(min_row=1, max_row=99999, min_col=1, max_col=11, values_only=True):
             if transaction[1] == self.end_of_transactions_label:
                 break
 
@@ -184,12 +195,8 @@ class TransactionWorkbook:
                 self.this_app.output(f"      {account_name}, {transaction_date}, {category_name}, {amount}\n")
 
             except InvalidTransactionException as e:
-                self.this_app.error("An unhandable exception has occured. Please review the log file.")
-                self.this_app.output(f"\nError! {e.message}\n")
-                self.this_app.output(f"{transaction}\n")
-                self.this_app.output("\nProcessing is terminating on this file.")
-                rc = 16
-                break
+                self.this_app.info(f"\nError! {e.message}\n")
+                self.this_app.info(f"{transaction}\n")
 
         return rc
 
