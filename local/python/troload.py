@@ -2,7 +2,10 @@
 troload.py
 """
 from argparse import ArgumentParser
-from glob import glob
+
+#  from glob import glob
+#  from operator import methodcaller
+from pathlib import Path
 import os
 import sys
 from traceback import print_exc
@@ -47,42 +50,76 @@ class TroLoadApp(BaseApp):
 
     #  -----------------------------------------------------------------------------
     def process(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         self.info("begin process()")
 
+        max_rc = 0
+        files_processed = 0
         stage_dir = self.cfgfile_params.get("stage_dir", "local/stage")
-        file_name = self.get_next_file(stage_dir)
-        if file_name is None:
-            rc = 128
-            self.info("No files were found to process.")
-            self.output("No files were found to process.")
-        else:
-            while file_name:
-                rc = self.process_file(file_name)
-                file_name = self.get_next_file(stage_dir)
+        stage_dir_path = Path(stage_dir)
+        for stage_file in stage_dir_path.iterdir():
+            files_processed += 1
+            rc = self.dispatch_files(stage_file)
+            if rc > max_rc:
+                max_rc = rc
+        return max_rc
 
-        self.info(f"end  process - returns {rc=}")
+        self.info(f"end process - reurns {max_rc}.")
+
+    #  -----------------------------------------------------------------------------
+    def dispatch_files(self, file_path):
+        """
+        Chech extensiton of a file. If we handle it, dispatch to approriate routine.
+
+        Args:
+            file_path (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        self.info(f"begin dispatch_files({file_path})")
+
+        rc = 0
+        suffix = file_path.suffix
+        if suffix in ("", ".bkp"):
+            pass
+        elif suffix == ".csv":
+            rc = self.dispatch_csv_file(file_path)
+        elif suffix == ".xlsx":
+            rc = self.process_excel_file(file_path)
+        else:
+            print(f"suffix type {suffix} not currently handled.")
+            rc = 16
+
+        self.info(f"end  dispatch_files - returns {rc}")
         return rc
 
     #  -----------------------------------------------------------------------------
-    def get_next_file(self, stage_dir):
-        self.info(f"begin get_next_file({stage_dir=})")
+    def dispatch_csv_file(self, file_path):
+        """_summary_
 
-        file_name = None
-
-        my_path = str(f"{stage_dir}/*.xlsx")
-        for file in glob(my_path, recursive=False):
-            file_name = f"{file}"
-
-        self.info(f"end   get_next_file - retuns {file_name=}")
-        return file_name
+        Args:
+            file_path (_type_): _description_
+        """
+        print(f"Processing file {file_path}")
+        return 0
 
     #  -----------------------------------------------------------------------------
-    def process_file(self, file_name):
-        self.info(f"begin process_file({file_name=})")
-        self.output(f"  processing file {file_name}\n")
+    def process_excel_file(self, file_path):
+        """_summary_
+
+        Args:
+            file_path (_type_): _description_
+        """
+        self.info(f"begin process_excel_file({file_path=})")
+        self.output(f"  processing file {file_path}\n")
 
         tran_tab = TransactionsTable(self.db_conn)
-        excel_workbook = TransactionWorkbook(self, file_name)
+        excel_workbook = TransactionWorkbook(self, file_path)
 
         rc = 0
         start_date, end_date = excel_workbook.get_transaction_date_range()
@@ -96,10 +133,10 @@ class TroLoadApp(BaseApp):
         excel_workbook.load_new_categories_from_workbook()
         rc = excel_workbook.load_transactions_from_workbook()
 
-        new_file_name = f"{file_name}.bkp"
-        os.rename(file_name, new_file_name)
+        new_file_path = f"{file_path}.bkp"
+        file_path.rename(new_file_path)
 
-        self.info(f"end   process_file - returns {rc=}")
+        self.info(f"end   process_excel_file - returns {rc=}")
         return rc
 
 
@@ -107,6 +144,7 @@ if __name__ == "__main__":
     try:
         this_app = TroLoadApp("troload", __version__)
         rc = this_app.process()
+        #         rc = this_app.test_get()
         this_app.destruct(rc)
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")
