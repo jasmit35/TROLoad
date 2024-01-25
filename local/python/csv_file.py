@@ -1,0 +1,9 @@
+"""
+csv_file.py
+
+"""
+
+
+class CSVFile:
+    def __init__(self, file_path):
+        self.file_path = file_path

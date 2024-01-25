@@ -1,6 +1,11 @@
 #
+autoflake < 2.0.0
+black
 config
+isort
 openpyxl
+platformdirs < 3,>= 2
 psycopg2
 python-dotenv
+tomli >= 2.0.1
 

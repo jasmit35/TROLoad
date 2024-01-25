@@ -1,4 +1,4 @@
-VERSION := "v0.3.0"
+#  VERSION := "v0.3.0"
 
 ########################################
 
@@ -17,6 +17,9 @@ ifeq (${ENV}, prod)
 endif
 
 ########################################
+
+functional-tests:
+	python -m unittest .tests.functional-tests.py
 
 # echo-env:
 # 	@echo "Environment = ${ENVIRONMENT}"

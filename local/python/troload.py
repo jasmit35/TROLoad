@@ -1,16 +1,17 @@
 """
 troload.py
 """
+import os
+import sys
 from argparse import ArgumentParser
 
 #  from glob import glob
 #  from operator import methodcaller
 from pathlib import Path
-import os
-import sys
 from traceback import print_exc
 
 from __init__ import __version__
+from csv_file import CSVFile
 
 shared_code_path = os.path.abspath("../local/python")
 sys.path.insert(1, shared_code_path)
@@ -88,7 +89,7 @@ class TroLoadApp(BaseApp):
         if suffix in ("", ".bkp"):
             pass
         elif suffix == ".csv":
-            rc = self.dispatch_csv_file(file_path)
+            rc = self.process_csv_file(file_path)
         elif suffix == ".xlsx":
             rc = self.process_excel_file(file_path)
         else:
@@ -99,14 +100,16 @@ class TroLoadApp(BaseApp):
         return rc
 
     #  -----------------------------------------------------------------------------
-    def dispatch_csv_file(self, file_path):
+    def process_csv_file(self, file_path):
         """_summary_
 
         Args:
             file_path (_type_): _description_
         """
-        print(f"Processing file {file_path}")
-        return 0
+        self.info(f"begin process_csv_file({file_path=})")
+        self.output(f"  processing file {file_path}\n")
+
+        CSVFile(file_path)
 
     #  -----------------------------------------------------------------------------
     def process_excel_file(self, file_path):
