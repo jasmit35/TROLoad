@@ -18,15 +18,18 @@ endif
 
 ########################################
 
+unit-tests:
+	python -m unittest tests.unit-tests
+
 functional-tests:
-	python -m unittest .tests.functional-tests.py
+	python -m unittest tests.functional-tests
 
 # echo-env:
 # 	@echo "Environment = ${ENVIRONMENT}"
 # 	@echo "TROHOME = ${TROHOME}"
-
+#
 # ########################################
-
+#
 # build:
 # 	docker-compose --file=${DCYAML} build
 

@@ -1,6 +1,6 @@
 #
 autoflake < 2.0.0
-black
+black>=24.3.0
 config
 isort
 openpyxl

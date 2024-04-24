@@ -1,6 +1,7 @@
 """
 troload.py
 """
+
 import os
 import sys
 from argparse import ArgumentParser
@@ -26,6 +27,9 @@ from transwkbk import TransactionWorkbook
 
 #  =============================================================================
 class TroLoadApp(BaseApp):
+
+    _max_return_code = 0
+
     def __init__(self, app_name, version):
         super().__init__(app_name, version)
         self.db_conn = get_database_connection(self.environment)
@@ -46,45 +50,39 @@ class TroLoadApp(BaseApp):
             default="troload.cfg",
             help="Name of the configuration file to use",
         )
+        parser.add_argument(
+            "-t",
+            "--type",
+            required=False,
+            default="trans",
+            help="Type of the file being loaded",
+        )
         args = parser.parse_args()
         return vars(args)
 
     #  -----------------------------------------------------------------------------
     def process(self):
-        """_summary_
-
-        Returns:
-            _type_: _description_
-        """
         self.info("begin process()")
 
-        max_rc = 0
         files_processed = 0
         stage_dir = self.cfgfile_params.get("stage_dir", "local/stage")
         stage_dir_path = Path(stage_dir)
         for stage_file in stage_dir_path.iterdir():
             files_processed += 1
             rc = self.dispatch_files(stage_file)
-            if rc > max_rc:
-                max_rc = rc
-        return max_rc
+            if rc > self._max_return_code:
+                self._max_return_code = rc
 
-        self.info(f"end process - reurns {max_rc}.")
+        self.info(f"end process - returns {self._max_return_code}.")
+        return self._max_return_code
 
     #  -----------------------------------------------------------------------------
     def dispatch_files(self, file_path):
-        """
-        Chech extensiton of a file. If we handle it, dispatch to approriate routine.
-
-        Args:
-            file_path (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
         self.info(f"begin dispatch_files({file_path})")
 
         rc = 0
+
+        """
         suffix = file_path.suffix
         if suffix in ("", ".bkp"):
             pass
@@ -95,6 +93,7 @@ class TroLoadApp(BaseApp):
         else:
             print(f"suffix type {suffix} not currently handled.")
             rc = 16
+        """
 
         self.info(f"end  dispatch_files - returns {rc}")
         return rc
@@ -147,7 +146,6 @@ if __name__ == "__main__":
     try:
         this_app = TroLoadApp("troload", __version__)
         rc = this_app.process()
-        #         rc = this_app.test_get()
         this_app.destruct(rc)
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")
