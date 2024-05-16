@@ -13,27 +13,55 @@ from std_dbconn import get_database_connection
 
 class TestCategories(unittest.TestCase):
     _database_connection = None
-    _test_id = None
     _test_table = None
 
     def setUp(self):
-        environment = "Devl"
-        self._database_connection = get_database_connection(environment)
+        self._database_connection = get_database_connection("devl")
         self._test_table = CategoriesTable(self._database_connection)
+        self._test_table.truncate()
 
-    def test_1_category_does_not_exist(self):
-        self._test_id = self._test_table.get_id("TestCat", False)
-        self.assertIsNone(self._test_id)
+    def test_1_select(self):
+        category_name = "TestCat_1"
+        missing_id = self._test_table.select_by_name(category_name)
+        self.assertIsNone(missing_id)
 
-    def test_2_add_category(self):
-        self.fail("Finish the test_2_add test")
+    def test_2_insert(self):
+        category_name = "TestCat_2"
+        missing_id = self._test_table.select_by_name(category_name)
+        self.assertIsNone(missing_id)
+        inserted_id = self._test_table.insert(category_name)
+        self.assertIsNotNone(inserted_id)
+        selected_id = self._test_table.select_by_name(category_name)
+        self.assertEqual(inserted_id, selected_id)
 
-    def test_3_category_exist(self):
-        self._test_id = self._test_table.get_id("TestCat", False)
-        self.assertEqual(self._test_id, 1)
+    def test_3_update(self):
+        category_name = "TestCat_3"
+        new_name = "TestCat_3_updated"
+        selected_id = self._test_table.select_by_name(category_name)
+        self.assertIsNone(selected_id)
+        inserted_id = self._test_table.insert(category_name)
+        self.assertIsNotNone(inserted_id)
+        self._test_table.update_by_id(inserted_id, new_name)
+        selected_id = self._test_table.select_by_name(category_name)
+        self.assertIsNone(selected_id)
+        selected_id = self._test_table.select_by_name(new_name)
+        self.assertEqual(inserted_id, selected_id)
+
+    def test_4_delete(self):
+        category_name = "TestCat_4"
+        selected_id = self._test_table.select_by_name(category_name)
+        self.assertIsNone(selected_id)
+        inserted_id = self._test_table.insert(category_name)
+        self.assertIsNotNone(inserted_id)
+        rows_deleted = self._test_table.delete_by_id(inserted_id)
+        self.assertEqual(rows_deleted, 1)
+        selected_id = self._test_table.select_by_name(category_name)
+        self.assertIsNone(selected_id)
 
     def tearDown(self):
-        pass
+        self._test_table.truncate()
+        self._test_table = None
+        self._database_connection = None
 
 
 if __name__ == "__main__":
@@ -41,6 +69,7 @@ if __name__ == "__main__":
 
 
 """
+        self.fail("Finish the test_2_add test")
 class FilesProcessedTest(unittest.TestCase):
     def setUp(self):
         self.stage_dir = Path("/Users/jeff/devl/TROLoad/stage")

@@ -1,5 +1,0 @@
-functional-test.py
-troload.egg-info/PKG-INFO
-troload.egg-info/SOURCES.txt
-troload.egg-info/dependency_links.txt
-troload.egg-info/top_level.txt

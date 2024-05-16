@@ -81,11 +81,11 @@ class TroLoadApp(BaseApp):
         self.info(f"begin dispatch_files({file_path})")
 
         rc = 0
-
-        """
         suffix = file_path.suffix
         if suffix in ("", ".bkp"):
-            pass
+            self.info(f"    ignoring file {file_path}")
+
+        """
         elif suffix == ".csv":
             rc = self.process_csv_file(file_path)
         elif suffix == ".xlsx":
