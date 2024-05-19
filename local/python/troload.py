@@ -13,6 +13,7 @@ from traceback import print_exc
 
 from __init__ import __version__
 from csv_file import CSVFile
+from function_wrapper import function_wrapper
 
 shared_code_path = os.path.abspath("../local/python")
 sys.path.insert(1, shared_code_path)
@@ -21,6 +22,7 @@ from std_dbconn import get_database_connection
 
 tro_code_path = os.path.abspath("../tro/local/python")
 sys.path.insert(1, tro_code_path)
+from csv_processor import CSVProcessor
 from transactions import TransactionsTable
 from transwkbk import TransactionWorkbook
 
@@ -28,11 +30,10 @@ from transwkbk import TransactionWorkbook
 #  =============================================================================
 class TroLoadApp(BaseApp):
 
-    _max_return_code = 0
-
     def __init__(self, app_name, version):
         super().__init__(app_name, version)
         self.db_conn = get_database_connection(self.environment)
+        self._max_return_code = 0
 
     #  -----------------------------------------------------------------------------
     def set_cmdline_params(self):
@@ -61,29 +62,40 @@ class TroLoadApp(BaseApp):
         return vars(args)
 
     #  -----------------------------------------------------------------------------
+    @function_wrapper
     def process(self):
-        self.info("begin process()")
+        #   self.info("begin process()")
 
         files_processed = 0
         stage_dir = self.cfgfile_params.get("stage_dir", "local/stage")
         stage_dir_path = Path(stage_dir)
         for stage_file in stage_dir_path.iterdir():
             files_processed += 1
-            rc = self.dispatch_files(stage_file)
+            rc = self.dispatch_file(stage_file)
             if rc > self._max_return_code:
                 self._max_return_code = rc
 
-        self.info(f"end process - returns {self._max_return_code}.")
+        #  self.info(f"end process - returns {self._max_return_code}.")
         return self._max_return_code
 
     #  -----------------------------------------------------------------------------
-    def dispatch_files(self, file_path):
-        self.info(f"begin dispatch_files({file_path})")
+    @function_wrapper
+    def dispatch_file(self, file_path):
+        #     self.info(f"begin dispatch_file({file_path})")
 
-        rc = 0
         suffix = file_path.suffix
         if suffix in ("", ".bkp"):
             self.info(f"    ignoring file {file_path}")
+            processor = None
+            rc = 0
+        if suffix == ".csv":
+            processor = CSVProcessor(self.db_conn, file_path)
+
+        if processor:
+            rc = processor.process()
+
+        #    self.info(f"end  dispatch_file - returns {rc}")
+        return rc
 
         """
         elif suffix == ".csv":
@@ -94,9 +106,6 @@ class TroLoadApp(BaseApp):
             print(f"suffix type {suffix} not currently handled.")
             rc = 16
         """
-
-        self.info(f"end  dispatch_files - returns {rc}")
-        return rc
 
     #  -----------------------------------------------------------------------------
     def process_csv_file(self, file_path):

@@ -2,6 +2,10 @@ import os
 import sys
 import unittest
 
+code_path = os.path.abspath("./local/python")
+sys.path.insert(1, code_path)
+from function_wrapper import function_wrapper
+
 tro_code_path = os.path.abspath("../tro/local/python")
 sys.path.insert(1, tro_code_path)
 from categories import CategoriesTable
@@ -12,20 +16,22 @@ from std_dbconn import get_database_connection
 
 
 class TestCategories(unittest.TestCase):
-    _database_connection = None
-    _test_table = None
+    #     _database_connection = None
+    #     _test_table = None
 
     def setUp(self):
         self._database_connection = get_database_connection("devl")
         self._test_table = CategoriesTable(self._database_connection)
-        self._test_table.truncate()
 
+    @function_wrapper
     def test_1_select(self):
+        self._test_table.truncate()
         category_name = "TestCat_1"
         missing_id = self._test_table.select_by_name(category_name)
         self.assertIsNone(missing_id)
 
     def test_2_insert(self):
+        self._test_table.truncate()
         category_name = "TestCat_2"
         missing_id = self._test_table.select_by_name(category_name)
         self.assertIsNone(missing_id)

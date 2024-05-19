@@ -11,6 +11,8 @@
 **/*.docx
 **/*.pdf
 **/*.xlsx
+**/*.bkp
+**/*.csv
 
 .secrets-db-password
 .vscode/
