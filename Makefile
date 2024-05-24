@@ -18,16 +18,20 @@ endif
 
 ########################################
 
-unit-tests:
-	python -m unittest tests.unit-tests
+categories_table_CRUD_unit_tests:
+	python -m unittest tests.categories_table_CRUD_unit_tests
+
+csv_processor_unit_tests:
+	python -m unittest tests.csv_processor_unit_tests
+
+all_unit_test:
+	python -m unittest tests.categories_table_CRUD_unit_tests
+	python -m unittest tests.csv_processor_unit_tests
+
 
 functional-tests:
 	python -m unittest tests.functional-tests
 
-# echo-env:
-# 	@echo "Environment = ${ENVIRONMENT}"
-# 	@echo "TROHOME = ${TROHOME}"
-#
 # ########################################
 #
 # build:
@@ -47,10 +51,10 @@ functional-tests:
 # 	--environment=${ENV}
 
 # ps:
-# 	docker-compose --file=${DCYAML} ps -a 
+# 	docker-compose --file=${DCYAML} ps -a
 
 # logs:
-# 	docker logs troload 
+# 	docker logs troload
 
 # exec:
 # 	docker-compose --file=${DCYAML} exec troload /bin/bash
@@ -82,5 +86,5 @@ functional-tests:
 # 	--detach \
 # 	--name troload \
 # 	troload_troload \
-# 	--environment ${ENV} 
+# 	--environment ${ENV}
 # 	docker ps -a

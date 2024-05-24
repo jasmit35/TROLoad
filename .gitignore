@@ -15,6 +15,7 @@
 **/*.csv
 
 .secrets-db-password
+.obsolete/
 .vscode/
 
 local/stage/*.bkp

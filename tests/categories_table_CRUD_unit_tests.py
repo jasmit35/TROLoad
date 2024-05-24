@@ -1,37 +1,51 @@
-import os
-import sys
+import logging
 import unittest
+from os.path import abspath as full_path
+from sys import path as environment_path
 
-code_path = os.path.abspath("./local/python")
-sys.path.insert(1, code_path)
-from function_wrapper import function_wrapper
+# add this project's local python path to the system path
+# code_path = full_path("./local/python")
+# environment_path.insert(1, code_path)
 
-tro_code_path = os.path.abspath("../tro/local/python")
-sys.path.insert(1, tro_code_path)
-from categories import CategoriesTable
-
-tro_code_path = os.path.abspath("../local/python")
-sys.path.insert(1, tro_code_path)
+# add my common python library's path to the system path
+code_path = full_path("../local/python")
+environment_path.insert(1, code_path)
+from function_logger import function_logger
 from std_dbconn import get_database_connection
 
+# add TRO's local python path to the system path
+code_path = full_path("../tro/local/python")
+environment_path.insert(1, code_path)
+from categories import CategoriesTable
 
-class TestCategories(unittest.TestCase):
-    #     _database_connection = None
-    #     _test_table = None
 
-    def setUp(self):
+class CategoriesTableUnitTests(unittest.TestCase):
+    _database_connection = None
+    _test_table = None
+
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
+        logging.basicConfig(
+            level=logging.DEBUG,
+            filename="CategoriesTableUnitTests.log",
+            datefmt="%Y-%m-%d %H:%M:%S",
+            format="%(asctime)s - %(levelname)s - %(message)s",
+        )
         self._database_connection = get_database_connection("devl")
         self._test_table = CategoriesTable(self._database_connection)
 
-    @function_wrapper
-    def test_1_select(self):
+    @function_logger
+    def setUp(self):
         self._test_table.truncate()
+
+    @function_logger
+    def test_1_select(self):
         category_name = "TestCat_1"
         missing_id = self._test_table.select_by_name(category_name)
         self.assertIsNone(missing_id)
 
+    @function_logger
     def test_2_insert(self):
-        self._test_table.truncate()
         category_name = "TestCat_2"
         missing_id = self._test_table.select_by_name(category_name)
         self.assertIsNone(missing_id)
@@ -40,6 +54,7 @@ class TestCategories(unittest.TestCase):
         selected_id = self._test_table.select_by_name(category_name)
         self.assertEqual(inserted_id, selected_id)
 
+    @function_logger
     def test_3_update(self):
         category_name = "TestCat_3"
         new_name = "TestCat_3_updated"
@@ -53,6 +68,7 @@ class TestCategories(unittest.TestCase):
         selected_id = self._test_table.select_by_name(new_name)
         self.assertEqual(inserted_id, selected_id)
 
+    @function_logger
     def test_4_delete(self):
         category_name = "TestCat_4"
         selected_id = self._test_table.select_by_name(category_name)
@@ -64,39 +80,10 @@ class TestCategories(unittest.TestCase):
         selected_id = self._test_table.select_by_name(category_name)
         self.assertIsNone(selected_id)
 
+    @function_logger
     def tearDown(self):
-        self._test_table.truncate()
-        self._test_table = None
-        self._database_connection = None
+        pass
 
 
 if __name__ == "__main__":
     unittest.main()
-
-
-"""
-        self.fail("Finish the test_2_add test")
-class FilesProcessedTest(unittest.TestCase):
-    def setUp(self):
-        self.stage_dir = Path("/Users/jeff/devl/TROLoad/stage")
-        self.test_file = Path(f"{self.stage_dir}/test_file.csv")
-        self.test_file.write_text("category name, hidden")
-        self.test_file.write_text("test cat, False")
-
-    def test_no_remaining_csv_files(self):
-        try:
-            this_app = TroLoadApp("troload", "0.0.0")
-            rc = this_app.process()
-            this_app.destruct(rc)
-            print(f"The syspath - {sys.path}")
-        except Exception as e:
-            print(f"Following uncaught exception occured. {e}")
-
-        files = self.stage_dir.glob("*.csv")
-
-        for i in files:
-            self.fail(f"The file {i} still exist in the stage directory")
-
-    def tearDown(self):
-        self.test_file.unlink()
-"""

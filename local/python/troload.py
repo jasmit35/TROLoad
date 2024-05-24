@@ -13,7 +13,7 @@ from traceback import print_exc
 
 from __init__ import __version__
 from csv_file import CSVFile
-from function_wrapper import function_wrapper
+from function_logger import function_logger
 
 shared_code_path = os.path.abspath("../local/python")
 sys.path.insert(1, shared_code_path)
@@ -36,6 +36,7 @@ class TroLoadApp(BaseApp):
         self._max_return_code = 0
 
     #  -----------------------------------------------------------------------------
+    @function_logger
     def set_cmdline_params(self):
         parser = ArgumentParser(description="TROLoad")
         parser.add_argument(
@@ -62,7 +63,7 @@ class TroLoadApp(BaseApp):
         return vars(args)
 
     #  -----------------------------------------------------------------------------
-    @function_wrapper
+    @function_logger
     def process(self):
         #   self.info("begin process()")
 
@@ -79,15 +80,14 @@ class TroLoadApp(BaseApp):
         return self._max_return_code
 
     #  -----------------------------------------------------------------------------
-    @function_wrapper
+    @function_logger
     def dispatch_file(self, file_path):
-        #     self.info(f"begin dispatch_file({file_path})")
-
         suffix = file_path.suffix
         if suffix in ("", ".bkp"):
             self.info(f"    ignoring file {file_path}")
             processor = None
             rc = 0
+
         if suffix == ".csv":
             processor = CSVProcessor(self.db_conn, file_path)
 
@@ -108,25 +108,20 @@ class TroLoadApp(BaseApp):
         """
 
     #  -----------------------------------------------------------------------------
+    @function_logger
     def process_csv_file(self, file_path):
         """_summary_
 
         Args:
             file_path (_type_): _description_
         """
-        self.info(f"begin process_csv_file({file_path=})")
         self.output(f"  processing file {file_path}\n")
 
         CSVFile(file_path)
 
     #  -----------------------------------------------------------------------------
+    @function_logger
     def process_excel_file(self, file_path):
-        """_summary_
-
-        Args:
-            file_path (_type_): _description_
-        """
-        self.info(f"begin process_excel_file({file_path=})")
         self.output(f"  processing file {file_path}\n")
 
         tran_tab = TransactionsTable(self.db_conn)
@@ -147,7 +142,6 @@ class TroLoadApp(BaseApp):
         new_file_path = f"{file_path}.bkp"
         file_path.rename(new_file_path)
 
-        self.info(f"end   process_excel_file - returns {rc=}")
         return rc
 
 

@@ -14,6 +14,10 @@ code_path = os.path.abspath("../TRO/local/python")
 search_path.insert(1, code_path)
 from categories import CategoriesTable
 
+code_path = os.path.abspath("./local/python")
+search_path.insert(1, code_path)
+from function_logger import function_logger
+
 
 class TestLoadCategories(TestCase):
 
@@ -24,8 +28,9 @@ class TestLoadCategories(TestCase):
         self._test_category_name = "test:test:test"
 
     def setUp(self):
-        self._test_table.truncate
+        self._test_table.truncate()
 
+    @function_logger
     def test_1_run_load(self):
         # category does not exist
         test_id = self._test_table.select_by_name(self._test_category_name)
@@ -46,21 +51,6 @@ class TestLoadCategories(TestCase):
     def tearDown(self):
         pass
 
-
-"""
-        # run the load code
-        try:
-            # this_app = TroLoadApp('troload', 'x.x.0')
-            # rc = this_app.process()
-            # this_app.destruct(rc)
-            troload
-        except Exception as e:
-            print(f"Following uncaught exception occured. {e}")
-            print_exc()
-        # category exist
-        test_id = self._test_table.select_by_name(self._test_category_name)
-        self.assertIsNotNone(test_id)
-"""
 
 if __name__ == "__main__":
     main()
