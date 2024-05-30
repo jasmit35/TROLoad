@@ -22,6 +22,8 @@ categories_table_CRUD_unit_tests:
 	python -m unittest tests.categories_table_CRUD_unit_tests
 
 csv_processor_unit_tests:
+	-rm ./*.log
+	-rm ./local/stage/c*
 	python -m unittest tests.csv_processor_unit_tests
 
 all_unit_test:

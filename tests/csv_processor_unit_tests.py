@@ -1,23 +1,23 @@
 import logging
 import unittest
-from os.path import abspath as full_path
+from os.path import abspath
 from os.path import exists as file_exists
 from shutil import copy2 as copy_file
 from sys import path as environment_path
 
 # add this project's local python path to the system path
-code_path = full_path("./local/python")
+code_path = abspath("./local/python")
 environment_path.insert(1, code_path)
-from csv_processor import CSVProcessor
+from csv_processor import CategoriesFileProcessor
 from function_logger import function_logger
 
 # add common python library's path to the system path
-code_path = full_path("../local/python")
+code_path = abspath("../local/python")
 environment_path.insert(1, code_path)
 from std_dbconn import get_database_connection
 
 # add TRO's local python path to the system path
-code_path = full_path("../tro/local/python")
+code_path = abspath("../tro/local/python")
 environment_path.insert(1, code_path)
 
 
@@ -25,35 +25,48 @@ class CSVProcessorUnitTest(unittest.TestCase):
 
     def __init__(self, methodName: str = "runTest") -> None:
         super().__init__(methodName)
+        self._database_connection = get_database_connection("devl")
+        self._test_file = abspath("./local/stage/categories.csv")
+        self._cvs_processor = CategoriesFileProcessor(self._database_connection, self._test_file)
+
         logging.basicConfig(
             level=logging.DEBUG,
             filename="CSVProcessorUnitTest.log",
             datefmt="%Y-%m-%d %H:%M:%S",
             format="%(asctime)s - %(levelname)s - %(message)s",
         )
-        self._database_connection = get_database_connection("devl")
-        self._test_file = full_path("./local/stage/categories.csv")
-        self._cvs_processor = CSVProcessor(self._database_connection, self._test_file)
+        self._logger = logging.getLogger()
 
     @function_logger
     def setUp(self):
         # stage file with test category
-        mock_file = full_path("./tests/mock_files/categories.csv")
-        copy_file(mock_file, self._test_file)
+        mock_file = abspath("./tests/mock_files/categories.csv")
+        rc = copy_file(mock_file, self._test_file)
+        return rc
 
     @function_logger
     def test_1_file_found_then_renamed(self):
-        file_exist = file_exists("./local/stage/categories.csv")
-        self.assertTrue(file_exist)
-        file_exist = file_exists("./local/stage/categories.csv.bkp")
-        self.assertFalse(file_exist)
+        input_file = self._test_file
+        backup_file = "./local/stage/categories.csv.bkp"
 
-        self._cvs_processor.process()
+        self.assertTrue(file_exists(input_file))
+        self.assertFalse(file_exists(backup_file))
 
-        file_exist = file_exists("./local/stage/categories.csv")
-        self.assertFalse(file_exist)
-        file_exist = file_exists("./local/stage/categories.csv.bkp")
-        self.assertTrue(file_exist)
+        self._cvs_processor.process_categories_file()
+
+        self.assertFalse(file_exists(input_file))
+        self.assertTrue(file_exists(backup_file))
+
+    @function_logger
+    def test_2_rows_inserted(self):
+        self._cvs_processor._categories_table.truncate()
+        number_rows = self._cvs_processor._categories_table.get_row_count()
+        self.assertEqual(number_rows, 0)
+
+        self._cvs_processor.process_categories_file()
+
+        number_rows = self._cvs_processor._categories_table.get_row_count()
+        self.assertGreater(number_rows, 0)
 
     @function_logger
     def tearDown(self):
@@ -64,7 +77,8 @@ class CSVProcessorUnitTest(unittest.TestCase):
 
     @function_logger
     def __del__(self):
-        logging.shutdown()
+        pass
+        # logging.shutdown()
 
 
 if __name__ == "__main__":
