@@ -5,35 +5,60 @@ troload.py
 import os
 import sys
 from argparse import ArgumentParser
-
-#  from glob import glob
-#  from operator import methodcaller
 from pathlib import Path
 from traceback import print_exc
 
 from __init__ import __version__
-from csv_file import CSVFile
-from function_logger import function_logger
 
-shared_code_path = os.path.abspath("../local/python")
-sys.path.insert(1, shared_code_path)
-from base_app import BaseApp
+troload_code_path = os.path.abspath("./python")
+sys.path.insert(1, troload_code_path)
+from std_app import StdApp
 from std_dbconn import get_database_connection
+from std_logging import function_logger, get_std_logger
+from std_report import StdReport
 
 tro_code_path = os.path.abspath("../tro/local/python")
 sys.path.insert(1, tro_code_path)
-from csv_processor import CSVProcessor
+from categories_CSV_processor import CategoriesCSVProcessor
 from transactions import TransactionsTable
-from transwkbk import TransactionWorkbook
+from transactions_excel_processor import TransactionWorkbook
 
 
 #  =============================================================================
-class TroLoadApp(BaseApp):
+class TroLoadApp(StdApp):
+    _db_conn = None
+    _max_return_code = None
 
+    _report = None
+    _logger = None
+
+    #  -----------------------------------------------------------------------------
     def __init__(self, app_name, version):
         super().__init__(app_name, version)
-        self.db_conn = get_database_connection(self.environment)
+        self._logger = get_std_logger()
+
         self._max_return_code = 0
+
+        environment = self._cmdline_params.get("environment")
+        self._db_conn = get_database_connection(environment)
+
+        self._report = StdReport("TROLoad", __version__, rpt_file_path="reports/troload.rpt")
+
+    #  -----------------------------------------------------------------------------
+    def __del__(self):
+        self._logger.info("begin 'troload.__del__'")
+
+        self._max_return_code = None
+        self._db_conn = None
+
+        self._logger.info("end   'troload.__del__'")
+        self._logger = None
+
+        return None
+
+    #  -----------------------------------------------------------------------------
+    def report(self, msg):
+        self._report.report(msg)
 
     #  -----------------------------------------------------------------------------
     @function_logger
@@ -49,7 +74,7 @@ class TroLoadApp(BaseApp):
             "-c",
             "--cfgfile",
             required=False,
-            default="troload.cfg",
+            default="etc/troload.cfg",
             help="Name of the configuration file to use",
         )
         parser.add_argument(
@@ -63,61 +88,40 @@ class TroLoadApp(BaseApp):
         return vars(args)
 
     #  -----------------------------------------------------------------------------
+    # Process all files in the stage directory
     @function_logger
     def process(self):
-        #   self.info("begin process()")
-
         files_processed = 0
-        stage_dir = self.cfgfile_params.get("stage_dir", "local/stage")
+        stage_dir = self._cfg_file_params.get("stage_dir")
         stage_dir_path = Path(stage_dir)
         for stage_file in stage_dir_path.iterdir():
             files_processed += 1
             rc = self.dispatch_file(stage_file)
-            if rc > self._max_return_code:
+            if int(rc) > self._max_return_code:
                 self._max_return_code = rc
 
-        #  self.info(f"end process - returns {self._max_return_code}.")
         return self._max_return_code
 
     #  -----------------------------------------------------------------------------
+    # if this is a file we can process, dispatch it to the appropriate processor
     @function_logger
     def dispatch_file(self, file_path):
         suffix = file_path.suffix
         if suffix in ("", ".bkp"):
-            self.info(f"    ignoring file {file_path}")
-            processor = None
-            rc = 0
+            self.report(f"ignoring file   {file_path}\n")
+            return 0
+
+        self.report(f"processing file {file_path}\n")
+
+        if suffix == ".xslx":
+            processor = TransactionWorkbook()
+            rc = processor.process_excel_file(self, file_path)
 
         if suffix == ".csv":
-            processor = CSVProcessor(self.db_conn, file_path)
+            processor = CategoriesCSVProcessor(self._db_conn, file_path, self._report)
+            rc = processor.process_categories_file()
 
-        if processor:
-            rc = processor.process()
-
-        #    self.info(f"end  dispatch_file - returns {rc}")
         return rc
-
-        """
-        elif suffix == ".csv":
-            rc = self.process_csv_file(file_path)
-        elif suffix == ".xlsx":
-            rc = self.process_excel_file(file_path)
-        else:
-            print(f"suffix type {suffix} not currently handled.")
-            rc = 16
-        """
-
-    #  -----------------------------------------------------------------------------
-    @function_logger
-    def process_csv_file(self, file_path):
-        """_summary_
-
-        Args:
-            file_path (_type_): _description_
-        """
-        self.output(f"  processing file {file_path}\n")
-
-        CSVFile(file_path)
 
     #  -----------------------------------------------------------------------------
     @function_logger
@@ -147,9 +151,9 @@ class TroLoadApp(BaseApp):
 
 if __name__ == "__main__":
     try:
-        this_app = TroLoadApp("troload", __version__)
+        this_app = TroLoadApp("TROLoad", __version__)
         rc = this_app.process()
-        this_app.destruct(rc)
+        this_app = None
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")
         print_exc()

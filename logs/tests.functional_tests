@@ -1,0 +1,9 @@
+2024-06-21 14:10:02 - INFO - Begin 'CategoriesTable.__init__' arguments - (<connection object at 0x103565540; dsn: 'user=tro_rw password=xxx dbname=devl host=localhost port=5432', closed: 0>)
+2024-06-21 14:10:02 - INFO - End   'CategoriesTable.__init__' returns - None
+2024-06-21 14:10:02 - INFO - Begin 'truncate            ' arguments - (<category_table.CategoriesTable object at 0x10346ea80>,) keyword arguments - {}
+2024-06-21 14:10:02 - INFO - End   'truncate            ' returns   - None
+2024-06-21 14:10:02 - INFO - Begin 'test_1_run_load     ' arguments - (<tests.functional_tests.TestLoadCategories testMethod=test_1_run_load>,) keyword arguments - {}
+2024-06-21 14:10:02 - INFO - Begin 'select_id_using_name' arguments - (<category_table.CategoriesTable object at 0x10346ea80>, 'Test A:Test B:Test C') keyword arguments - {}
+2024-06-21 14:10:02 - INFO - End   'select_id_using_name' returns   - None
+2024-06-21 14:10:02 - INFO - Begin 'select_id_using_name' arguments - (<category_table.CategoriesTable object at 0x10346ea80>, 'Test A:Test B:Test C') keyword arguments - {}
+2024-06-21 14:10:02 - INFO - End   'select_id_using_name' returns   - None

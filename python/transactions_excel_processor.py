@@ -10,7 +10,7 @@ import openpyxl
 p = os.path.abspath("../TRO/local/python")
 sys.path.insert(1, p)
 from accounts import AccountsTable
-from categories import CategoriesTable
+from category_table import CategoriesTable
 from transactions import Transaction, TransactionsTable, InvalidTransactionException
 
 trans_date_col = 1
@@ -30,7 +30,7 @@ class TransactionWorkbook:
         self.this_app = this_app
         self.workbook = openpyxl.load_workbook(filename=file_name)
         self.accounts_table = AccountsTable(this_app.db_conn)
-        self.categories_table = CategoriesTable(this_app.db_conn)
+        self.category_table = CategoriesTable(this_app.db_conn)
         self.end_of_transactions_label = None
 
     #  ----------------------------------------------------------------------

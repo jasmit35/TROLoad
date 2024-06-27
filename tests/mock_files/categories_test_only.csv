@@ -1,0 +1,10 @@
+,Category List
+
+,5/28/2024 - QDATA
+
+
+"Category","Type","Description","Group","Tax Line Item","Hide"
+,"Expense",,"Personal Expenses"," T",
+"Test A","Expense",,"Non-Discretionary Expenses",,
+"   Test B","Expense",,"Non-Discretionary Expenses",,
+"      Test C","Expense",,"Discretionary Expenses",,

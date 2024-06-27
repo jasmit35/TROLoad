@@ -5,6 +5,9 @@
 		}
 	],
 	"settings": {
+		"python.autoComplete.extraPaths": [],
+		"python.analysis.extraPaths": [],
+		"terminal.integrated.localEchoStyle": "dim"
 	},
 	"extensions": {
 		"recommendations": [
