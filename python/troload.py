@@ -43,11 +43,13 @@ class TroLoadApp(StdApp):
         self._db_conn = get_database_connection(environment)
 
         self._report = StdReport("TROLoad", __version__, rpt_file_path="reports/troload.rpt")
+        self._report.print_header()
 
     #  -----------------------------------------------------------------------------
     def __del__(self):
         self._logger.info("begin 'troload.__del__'")
 
+        self._report.print_footer(self._max_return_code)
         self._max_return_code = None
         self._db_conn = None
 

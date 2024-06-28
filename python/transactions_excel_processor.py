@@ -1,6 +1,7 @@
 """
 transwkbk.py - Excel workbook of transaction produced by Quicken.
 """
+
 import datetime
 import os
 import sys
@@ -10,8 +11,8 @@ import openpyxl
 p = os.path.abspath("../TRO/local/python")
 sys.path.insert(1, p)
 from accounts import AccountsTable
-from category_table import CategoriesTable
-from transactions import Transaction, TransactionsTable, InvalidTransactionException
+from categories_table import CategoriesTable
+from transactions import InvalidTransactionException, Transaction, TransactionsTable
 
 trans_date_col = 1
 account_col = 2

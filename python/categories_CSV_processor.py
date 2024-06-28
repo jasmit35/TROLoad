@@ -13,8 +13,9 @@ from std_logging import function_logger, get_std_logger
 
 code_path = os.path.abspath("../TRO/local/python")
 PATH.insert(1, code_path)
+from categories_table import CategoriesTable
 from category_data import CategoryData
-from category_table import CategoriesTable
+from category_groups import CategoryGroupsTable
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -23,6 +24,7 @@ class CategoriesCSVProcessor:
     _file_path = None
     _categories_table = None
     _previous_category_name = None
+    _category_groups_table = None
 
     _report = None
     _logger = None
@@ -37,6 +39,7 @@ class CategoriesCSVProcessor:
         self._file_path = csv_file_path
 
         self._categories_table = CategoriesTable(self._db_conn)
+        self._category_groups_table = CategoryGroupsTable(self._db_conn)
         self._previous_category_name = ""
         self._logger.info("End   'CategoriesCSVProcessor.__init__' returns - None")
         return None
@@ -149,7 +152,13 @@ class CategoriesCSVProcessor:
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger
     def get_category_group_fk(self, category_group):
-        return 0
+        if category_group in [None, ""]:
+            return 0
+        category_group_id = self._category_groups_table.select_id_using_name(category_group)
+        if category_group_id is None:
+            self.report(f"      Inserting category group '{category_group}'\n")
+            category_group_id = self._category_groups_table.insert(category_group)
+        return category_group_id
 
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger

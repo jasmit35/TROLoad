@@ -14,7 +14,8 @@ from std_logging import StdLogging, function_logger
 
 code_path = os.path.abspath("../TRO/local/python")
 search_path.insert(1, code_path)
-from category_table import CategoriesTable
+from categories_table import CategoriesTable
+from category_groups import CategoryGroupsTable
 
 # code_path = os.path.abspath("./local/python")
 # search_path.insert(1, code_path)
@@ -24,6 +25,7 @@ from category_table import CategoriesTable
 class TestLoadCategories(TestCase):
     _database_connection = None
     _test_table = None
+    _category_groups = None
     _test_category_name = None
 
     _logger = None
@@ -36,9 +38,11 @@ class TestLoadCategories(TestCase):
         self._database_connection = get_database_connection("devl")
         self._test_table = CategoriesTable(self._database_connection)
         self._test_category_name = "Test A:Test B:Test C"
+        self._category_groups = CategoryGroupsTable(self._database_connection)
 
     # ---------------------------------------------------------------------------------------------------------------------
     def __del__(self):
+        self._category_groups = None
         self._test_category_name = None
         self._test_table = None
         self._database_connection = None
@@ -47,6 +51,7 @@ class TestLoadCategories(TestCase):
 
     # ---------------------------------------------------------------------------------------------------------------------
     def setUp(self):
+        self._category_groups.truncate()
         self._test_table.truncate()
 
     # ---------------------------------------------------------------------------------------------------------------------
