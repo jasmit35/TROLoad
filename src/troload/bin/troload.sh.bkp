@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+# set -x
+#
+#  runmypy.sh - This script is used to configure the Python virtual environment and
+#               execute a Python script from cron.
+#
+home_dir=$(dirname ${0})
+home_dir=${home_dir%%'/bin'}
+
+the_script=$(basename ${0})
+the_script=${the_script%%'.sh'}.py
+
+the_app=$(basename ${0})
+the_app=${the_app%%'.sh'}
+
+echo "The application -" $the_app
+
+export PYENV_ROOT=$HOME/.pyenv
+
+#  Change to the project's directory
+cd ${home_dir}
+
+#  Run the script with parameters passed to this script 
+${PYENV_ROOT}/versions/TROLoad/bin/python python/${the_script} ${*}
