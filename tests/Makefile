@@ -34,4 +34,3 @@ functional-tests:
 	-rm logs/*
 	-rm reports/*
 	python -m unittest tests.functional_tests
-

@@ -31,7 +31,6 @@ from std_logging import StdLogging, function_logger
 
 
 class TestLoadCategories(TestCase):
-
     # ---------------------------------------------------------------------------------------------------------------------
     def __init__(self, testName):
         super(TestLoadCategories, self).__init__(testName)

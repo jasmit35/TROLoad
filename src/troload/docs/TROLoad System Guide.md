@@ -1,7 +1,7 @@
 # TRO Load System Guide
 
-
 ## Deploying a new release to Prod
+
 **If FireStarter has not been updated to specify a release, stage the desired release in the /tmp directory before running auto_update. Then be sure to select the option to use the existing tar file.**
 
 ```
@@ -31,14 +31,14 @@ rm -rf TROLoad
 export ENVIRONMENT=prod
 auto-update -e prod -a troload
 ```
+
 ### Update .db_secrets.env
+
 The secrets files are not stored on GitHub because the contain user names and passwords. You need to manually copy the files:
 
 ```
 cd /Users/jeff/prod/TROLoad/local/etc
 cp /Users/jeff/devl/TROLoad/local/etc/.db_secrets.env .
 ```
-
-
 
 # Requirements.txt

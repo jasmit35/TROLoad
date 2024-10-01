@@ -34,7 +34,6 @@ from transactions_excel_processor import TransactionsExcelProcessor
 
 #  =============================================================================
 class TroLoadApp(StdApp):
-
     #  -----------------------------------------------------------------------------
     def __init__(self, app_name, version):
         super().__init__(app_name, version)

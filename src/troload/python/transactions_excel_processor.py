@@ -113,7 +113,6 @@ class TransactionsExcelProcessor:
     # ----------------------------------------------------------------------
     @function_logger
     def load_any_new_accounts(self):
-
         accounts_table = AccountsTable(self._db_conn)
         sheet = self._workbook.active
 
@@ -138,7 +137,6 @@ class TransactionsExcelProcessor:
     #  ----------------------------------------------------------------------
     @function_logger
     def load_any_new_categories(self):
-
         sheet = self._workbook.active
 
         self.report("\n\n    The following new categories have been added:\n")
@@ -150,7 +148,6 @@ class TransactionsExcelProcessor:
             max_col=7,
             values_only=True,
         ):
-
             cat_name = transaction[0]
 
             if cat_name:
