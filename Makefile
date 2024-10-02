@@ -48,6 +48,17 @@ docs-test: ## Test if documentation can be built without warnings or errors
 docs: ## Build and serve the documentation
 	@uv run mkdocs serve
 
+.PHONY: dr-build
+dr-build: clean-build ## Build wheel file
+	@echo "🚀 Building docker image"
+	@docker image build -t example/troload:latest .
+	docker scout quickview
+
+.PHONY: dr-run 
+dr-run: ##  Run the container
+	@echo "🚀 Running container: Running Docker container"
+	@docker container run --rm -it example/troload:latest
+
 .PHONY: help
 help:
 	@uv run python -c "import re; \

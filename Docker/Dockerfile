@@ -13,7 +13,7 @@ RUN apt-get -y update && apt-get -y upgrade
 WORKDIR $APP_HOME 
 
 #  Add the application code
-ADD src . 
+ADD . . 
 
 #  Check results
 CMD ["/bin/bash"]
