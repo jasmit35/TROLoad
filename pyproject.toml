@@ -7,13 +7,21 @@ readme = "README.md"
 keywords = ['python']
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "config>=0.5.1",
+    "openpyxl>=3.1.5",
     "psycopg2-binary>=2.9.9",
+    "python-dotenv>=1.0.1",
 ]
 
 [project.urls]
 Homepage = "https://jasmit.github.io/TROLoad/"
 Repository = "https://github.com/jasmit/TROLoad"
 Documentation = "https://jasmit.github.io/TROLoad/"
+
+[copyfiles]
+python = [
+    "/Users/jeff/devl/TRO/src/tro/python/categories_table.py"
+]
 
 [tool.uv]
 dev-dependencies = [

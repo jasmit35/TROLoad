@@ -26,8 +26,8 @@ build: clean-build ## Build wheel file
 	@uvx --from build pyproject-build --installer uv
 
 .PHONY: clean-build
-clean-build: ## Clean build artifacts
-	@echo "🚀 Removing build artifacts"
+clean-build: ## Clean up any crap from previous builds 
+	@echo "🚀 Removing any crap from previous builds..."
 	@uv run python -c "import shutil; import os; shutil.rmtree('dist') if os.path.exists('dist') else None"
 
 .PHONY: publish
@@ -46,17 +46,21 @@ docs-test: ## Test if documentation can be built without warnings or errors
 
 .PHONY: docs
 docs: ## Build and serve the documentation
+	@echo "🚀 Generating local PDF documentation" 
+	@pandoc --toc=true -o '/Volumes/SharedSpace/Users/jeff/Project Documentation/Active/TROLoad System Guide.pdf' 'docs/TROLoad System Guide.md'
 	@uv run mkdocs serve
 
 .PHONY: dr-build
-dr-build: clean-build ## Build wheel file
-	@echo "🚀 Building docker image"
+dr-build: clean-build ## Build our Docker container 
+	@echo "🚀 Building our docker image,,,"
+	@export DOCKER_BUILDKIT=1
 	@docker image build -t example/troload:latest .
-	docker scout quickview
+	@echo "🚀  Ok then I will run Docker Scout quickview..."
+	@docker scout quickview
 
 .PHONY: dr-run 
-dr-run: ##  Run the container
-	@echo "🚀 Running container: Running Docker container"
+dr-run: ## Run this project's container
+	@echo "🚀 Running the container: Running Docker container"
 	@docker container run --rm -it example/troload:latest
 
 .PHONY: help
@@ -65,3 +69,6 @@ help:
 	[[print(f'\033[36m{m[0]:<20}\033[0m {m[1]}') for m in re.findall(r'^([a-zA-Z_-]+):.*?## (.*)$$', open(makefile).read(), re.M)] for makefile in ('$(MAKEFILE_LIST)').strip().split()]"
 
 .DEFAULT_GOAL := help
+#
+# docker container run --rm -ti 2a236efc3f06 /bin/bash
+#

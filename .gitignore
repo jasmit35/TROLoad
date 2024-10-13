@@ -1,10 +1,11 @@
-docs/source
+#
+#  Customize for TROLoad
+#
+.DS_Store
+TROLoad.code-workspace
 
-# From https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
 
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
+
 *$py.class
 
 # C extensions

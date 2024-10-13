@@ -1,9 +1,10 @@
 """
-troload.py
+TROLoad Import data in variosus formats into the TRO database.
 """
 
 import os
 from sys import path as PATH
+from time import sleep
 
 # Add TROLoads code to the path
 code_path = os.path.abspath("./python")
@@ -88,18 +89,20 @@ class TroLoadApp(StdApp):
     # Process all files in the stage directory
     @function_logger
     def process(self):
-        files_processed = 0
+        while(True):
+            files_processed = 0
 
-        stage_dir = self.cfg_file_params.get("stage_dir", "stage")
-        stage_dir_path = Path(stage_dir)
+            stage_dir = self.cfg_file_params.get("stage_dir", "stage")
+            stage_dir_path = Path(stage_dir)
 
-        for stage_file in stage_dir_path.iterdir():
-            files_processed += 1
-            rc = self.dispatch_file(stage_file)
-            if int(rc) > self._max_return_code:
-                self._max_return_code = rc
+            for stage_file in stage_dir_path.iterdir():
+                files_processed += 1
+                rc = self.dispatch_file(stage_file)
+                if int(rc) > self._max_return_code:
+                    self._max_return_code = rc
 
-        self.output_report.print_footer(self._max_return_code)
+            self.output_report.print_footer(self._max_return_code)
+            sleep(300)    
 
         return self._max_return_code
 
