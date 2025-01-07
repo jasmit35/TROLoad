@@ -58,10 +58,7 @@ class AccountsTable:
         with self.db_conn.cursor() as cursor:
             cursor.execute(sql, (account_name,))
             results = cursor.fetchone()
-        if results is None:
-            account_id = None
-        else:
-            account_id = results[0]
+            account_id = None if results is None else results[0]
         return account_id
 
     #  ----------------------------------------------------------------------

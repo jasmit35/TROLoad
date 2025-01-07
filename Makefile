@@ -26,7 +26,7 @@ build: clean-build ## Build wheel file
 	@uvx --from build pyproject-build --installer uv
 
 .PHONY: clean-build
-clean-build: ## Clean up any crap from previous builds 
+clean-build: ## Clean up any crap from previous builds
 	@echo "🚀 Removing any crap from previous builds..."
 	@uv run python -c "import shutil; import os; shutil.rmtree('dist') if os.path.exists('dist') else None"
 
@@ -46,19 +46,20 @@ docs-test: ## Test if documentation can be built without warnings or errors
 
 .PHONY: docs
 docs: ## Build and serve the documentation
-	@echo "🚀 Generating local PDF documentation" 
+	@echo "🚀 Generating local PDF documentation"
 	@pandoc --toc=true -o '/Volumes/SharedSpace/Users/jeff/Project Documentation/Active/TROLoad System Guide.pdf' 'docs/TROLoad System Guide.md'
+	@pandoc --toc=true -o "/Volumes/SharedSpace/Users/jeff/Project Documentation/Active/TROLoad User's Guide.pdf" "docs/TROLoad User's Guide.md"
 	@uv run mkdocs serve
 
 .PHONY: dr-build
-dr-build: clean-build ## Build our Docker container 
+dr-build: clean-build ## Build our Docker container
 	@echo "🚀 Building our docker image,,,"
 	@export DOCKER_BUILDKIT=1
 	@docker image build -t example/troload:latest .
 	@echo "🚀  Ok then I will run Docker Scout quickview..."
 	@docker scout quickview
 
-.PHONY: dr-run 
+.PHONY: dr-run
 dr-run: ## Run this project's container
 	@echo "🚀 Running the container: Running Docker container"
 	@docker container run --rm -it example/troload:latest

@@ -89,7 +89,7 @@ class TroLoadApp(StdApp):
     # Process all files in the stage directory
     @function_logger
     def process(self):
-        while(True):
+        while True:
             files_processed = 0
 
             stage_dir = self.cfg_file_params.get("stage_dir", "stage")
@@ -102,7 +102,7 @@ class TroLoadApp(StdApp):
                     self._max_return_code = rc
 
             self.output_report.print_footer(self._max_return_code)
-            sleep(300)    
+            sleep(300)
 
         return self._max_return_code
 

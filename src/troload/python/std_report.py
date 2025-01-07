@@ -9,13 +9,10 @@ from std_logging import function_logger
 
 
 class StdReport:
-
     #  -----------------------------------------------------------------------------
     def __init__(self, app_name, version="0.0.0", rpt_file_path=None):
         self._logger = getLogger()
-        self._logger.info(
-            f"Begin 'StdReport.__init__      ' arguments - ({app_name=}, {version=}, {rpt_file_path=})"
-        )
+        self._logger.info(f"Begin 'StdReport.__init__      ' arguments - ({app_name=}, {version=}, {rpt_file_path=})")
 
         self._app_name = app_name
         self._version = version

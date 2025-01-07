@@ -1,53 +1,56 @@
-#================================================================== 
+#==================================================================
 #  Part 1:
-#  Build a virtual environment with all of 
+#  Build a virtual environment with all of
 #  our requirements except the application.
-#================================================================== 
+#==================================================================
 
-# syntax=docker/dockerfile:1
+# SYNTAX=docker/dockerfile:1
 
 FROM python:3.12 AS builder
+
+ENV APP_HOME="/opt/app/troload"
 
 #  Install the uv utility
 COPY --from=ghcr.io/astral-sh/uv:0.4.20 /uv /bin/uv
 
-#  Copy in the project file
-RUN mkdir -p /opt/app/troload 
-WORKDIR /opt/app/troload
-COPY pyproject.toml . 
+#  Set up the project file
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
+COPY pyproject.toml .
 
-#  Use uv to create the virtual environment with all requirements
-RUN uv sync
+#  Use uv to create the virtual environment with all
+#  requirements for the app but none for development
+RUN uv sync --no-dev
 
-##================================================================== 
+##==================================================================
 ##  Part 2:
 ##  Copy in our pre-built virtual environment and activate it.
 ##  Copy in our applicaion.
-##================================================================== 
+##==================================================================
 
 FROM python:3.12-slim-bookworm
 
-ENV VIRTUAL_ENV="/opt/app/troload/.venv"
 ENV APP_HOME="/opt/app/troload"
+ENV VIRTUAL_ENV="/opt/app/troload/.venv"
 
-#  Create a container id to run the app
-RUN groupadd -g 10001 container && \
-    useradd -u 10000 -g container container
+#  Copy the pre-built virtual environment and the application code
+COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+COPY ./src /opt/app
 
-#  Get any updates and instll other necessities
+#  Get any updates
 RUN apt-get -y update && \
     apt-get -y upgrade
 
-#  Copy the virtual environment with all our requiements and activate
-COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV 
-COPY ./src /opt/app
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+#  Create a container id to run the app
+RUN groupadd -g 10000 container && \
+    useradd -u 10001 -g container container
 
-RUN chown -R container:container $APP_HOME 
-WORKDIR $APP_HOME 
+RUN chown -R container:container $APP_HOME
+WORKDIR $APP_HOME
 USER container:container
 
-#  Copy in our application and run it
+#  Run it
 ENTRYPOINT ["python", "/opt/app/troload/python/troload.py"]
 CMD ["-e", "devl", "-t", "cat"]
 

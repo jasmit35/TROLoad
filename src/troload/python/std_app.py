@@ -3,19 +3,15 @@ std_app.py
 """
 
 from config import Config
-
 from std_logging import StdLogging, function_logger
 
 
 #  =============================================================================
 class StdApp:
-
     #  -----------------------------------------------------------------------------
     def __init__(self, app_name="", version="0.0.0"):
         self._logger = StdLogging(f"logs/{app_name}.log")
-        self._logger.info(
-            f"Begin 'StdApp.__init__         ' arguments - ({app_name=}, {version=})"
-        )
+        self._logger.info(f"Begin 'StdApp.__init__         ' arguments - ({app_name=}, {version=})")
 
         self._app_name = app_name
         self._version = version
@@ -34,9 +30,7 @@ class StdApp:
     #  -----------------------------------------------------------------------------
     @function_logger
     def set_cmdline_params(self):
-        raise NotImplementedError(
-            "Please define set_cmdline_params in the derived class."
-        )
+        raise NotImplementedError("Please define set_cmdline_params in the derived class.")
 
     #  -----------------------------------------------------------------------------
     @function_logger

@@ -4,13 +4,13 @@ This application is currently designed to pick up any spreadsheets (files with a
 
 ## Monthly processing
 
-You probably want to process more than the previous months data. It depends on if you have modified any transactions from prior months. For documentation purposes, we will process the proceding three months.
+You probably want to process more than the previous months data. It depends on if you have modified any transactions from prior months. For documentation purposes, we will process the proceding six months.
 
-### On enki - Backup the starting point
+### On the database server - Backup the starting point
 
 Before starting a new month, run a full export of the data as it currently stands. Use the instructions in the "exports" section of the "Postgres User's Guide".
 
-### On Ganeymede
+### On Ninkasi - export the new data
 
 Run Quicken and select the following options:
 
@@ -19,34 +19,24 @@ Run Quicken and select the following options:
 - The real oracle
 - Transactions
 - Select the icon to customize the report.
-- Modify the dates to include the previous three months.
+- Modify the dates to include the previous six months.
 - Generate the report.
 - Click the icon and chose to export to excel workbook.
 - Save the spreadsheet to the shared space on Synology.
 
-### On enki
+### On the application server - load the data
 
 Verify the spreadsheet is in the correct directory with the xlsx extension:
 
-`ll '/Volumes/Shared space/TROStage'`
+`ll '/Volumes/SharedSpace/TROStage'`
 
-Modify the crontab to run troload in the appropriate environment:
-
-`crontab -e`
+Make sure the TROLoad container is running:
 
 ```
-#
-#  TRO Load
-53 TROLOAD_TEST=/Users/jeff/test/troload
-54 20 16 10 03 * $RUNPY_TEST $TROLOAD_TEST/src/troload.py -e test >$TROLOAD_TEST/local/log/troload.out 2>&1
+docker ps
 ```
 
-```prod
-#
-#  TRO Load
-TROLOAD_LOCAL=/Users/jeff/prod/TROLoad/local
-45 11 30 08 * $RUNPY_PROD $TROLOAD_LOCAL/python/troload.py -e prod >$TROLOAD_LOCAL/log/troload.log 2>&1
-```
+It runs once per hour so it should eventually pick up the file.
 
 Review the log files from the load. If their are problems that can be corrected via Quicken, do so and start over at 'Monthly Processing'.
 
