@@ -28,15 +28,13 @@ Run Quicken and select the following options:
 
 Verify the spreadsheet is in the correct directory with the xlsx extension:
 
-`ll '/Volumes/SharedSpace/TROStage'`
+`ll '/Volumes/SharedSpace/<environment>/TROStage'`
 
-Make sure the TROLoad container is running:
+Use the makefile to run the application:
 
 ```
-docker ps
+make dr-run
 ```
-
-It runs once per hour so it should eventually pick up the file.
 
 Review the log files from the load. If their are problems that can be corrected via Quicken, do so and start over at 'Monthly Processing'.
 
@@ -53,40 +51,6 @@ psql -h kmaster -p 5432 -d prod -U postgres
 ### Check balances
 
 Use the "Monthly Processing" instructions for the TROReports application to check the accuracy of the data for the month. If changes were made to the add_missing.sql script, repeat the load of the data.
-
-## Appendix A: Setup for initial load
-
-Their are initial values that need to be loaded before the first data from Quicken. Execute the following to do so:
-
-### For the Devl environment:
-
-```
-cd /Users/jeff/devl/TROLoad/local/sql
-psql -h localhost -p 5430 -d devl -U postgres
-```
-
-### For the Test environment:
-
-```
-cd /Users/jeff/test/TROLoad/local/sql
-psql -h localhost -p 5432 -d test -U postgres
-```
-
-### For the Prod environment:
-
-```
-cd /Users/jeff/prod/TROLoad/local/sql
-psql -h kmaster -p 5432 -d prod -U postgres
-```
-
-### For all environments:
-
-```
-\i grant_permsissions.sql
-\i set_start.sql
-\i set_beginning_balances.sql
-\q
-```
 
 The report should end with a 'Fineshed successfully' message.
 

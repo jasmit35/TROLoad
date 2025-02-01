@@ -2,12 +2,23 @@
 TROLoad Import data in variosus formats into the TRO database.
 """
 
-import os
-from sys import path as PATH
-from time import sleep
+from argparse import ArgumentParser
+from pathlib import Path
+from traceback import print_exc
 
+from __init__ import __version__ as Version
+from categories_CSV_processor import CategoriesCSVProcessor
+from std_app import StdApp
+from std_dbconn import get_database_connection
+from std_logging import function_logger
+from std_report import StdReport
+
+#  from transactions import TransactionsTable
+from transactions_excel_processor import TransactionsExcelProcessor
+
+"""
 # Add TROLoads code to the path
-code_path = os.path.abspath("./python")
+code_path = os.path.abspath("./src/troload/python")
 PATH.append(code_path)
 
 # Add TRO code to the path
@@ -17,20 +28,7 @@ PATH.append(code_path)
 # Add my standard code to the path
 code_path = os.path.abspath("../local/python")
 PATH.append(code_path)
-
-from argparse import ArgumentParser
-from logging import getLogger
-from pathlib import Path
-from traceback import print_exc
-
-from __init__ import __version__
-from categories_CSV_processor import CategoriesCSVProcessor
-from std_app import StdApp
-from std_dbconn import get_database_connection
-from std_logging import function_logger
-from std_report import StdReport
-from transactions import TransactionsTable
-from transactions_excel_processor import TransactionsExcelProcessor
+"""
 
 
 #  =============================================================================
@@ -38,14 +36,15 @@ class TroLoadApp(StdApp):
     #  -----------------------------------------------------------------------------
     def __init__(self, app_name, version):
         super().__init__(app_name, version)
-        self._logger = getLogger()
+        #  self._logger = getLogger()
 
         self._max_return_code = 0
 
         environment = self.cmdline_params.get("environment")
+        environment = "devl" if environment is None or environment not in ["devl", "test", "prod"] else environment
         self._db_conn = get_database_connection(environment)
 
-        self.output_report = StdReport("TROLoad", __version__, rpt_file_path="reports/TROLoad.rpt")
+        self.output_report = StdReport("TROLoad", Version, rpt_file_path="reports/TROLoad.rpt")
         self.output_report.print_header()
 
     # ---------------------------------------------------------------------------------------------------------------------
@@ -89,20 +88,18 @@ class TroLoadApp(StdApp):
     # Process all files in the stage directory
     @function_logger
     def process(self):
-        while True:
-            files_processed = 0
+        stage_dir = self.cfg_file_params.get("stage_dir", "stage")
+        stage_dir_path = Path(stage_dir)
+        self.report(f"processing files in {stage_dir_path}\n")
 
-            stage_dir = self.cfg_file_params.get("stage_dir", "stage")
-            stage_dir_path = Path(stage_dir)
+        for stage_file in stage_dir_path.iterdir():
+            self.report(f"processing file {stage_file}\n")
 
-            for stage_file in stage_dir_path.iterdir():
-                files_processed += 1
-                rc = self.dispatch_file(stage_file)
-                if int(rc) > self._max_return_code:
-                    self._max_return_code = rc
+            rc = self.dispatch_file(stage_file)
+            if int(rc) > self._max_return_code:
+                self._max_return_code = rc
 
-            self.output_report.print_footer(self._max_return_code)
-            sleep(300)
+        self.output_report.print_footer(self._max_return_code)
 
         return self._max_return_code
 
@@ -128,13 +125,14 @@ class TroLoadApp(StdApp):
         self.report(f"ignoring file   {file_path}\n")
         return 0
 
-    #  -----------------------------------------------------------------------------
-    @function_logger
+
+"""    #  -----------------------------------------------------------------------------
+     @function_logger
     def process_excel_file(self, file_path):
         self.report(f"  processing file {file_path}\n")
 
         tran_tab = TransactionsTable(self._db_conn)
-        excel_workbook = TransactionWorkbook(self, file_path)
+        excel_workbook = TransactionsExcelProcessor(self, file_path)
 
         rc = 0
         start_date, end_date = excel_workbook.get_transaction_date_range()
@@ -152,12 +150,12 @@ class TroLoadApp(StdApp):
         file_path.rename(new_file_path)
 
         return rc
-
+ """
 
 #  =============================================================================
 if __name__ == "__main__":
     try:
-        this_app = TroLoadApp("TROLoad", __version__)
+        this_app = TroLoadApp("TROLoad", Version)
         this_app.process()
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")

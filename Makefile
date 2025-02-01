@@ -51,18 +51,49 @@ docs: ## Build and serve the documentation
 	@pandoc --toc=true -o "/Volumes/SharedSpace/Users/jeff/Project Documentation/Active/TROLoad User's Guide.pdf" "docs/TROLoad User's Guide.md"
 	@uv run mkdocs serve
 
+################################################################################
+#
+#  Docker stuff
+#
+################################################################################
+
 .PHONY: dr-build
 dr-build: clean-build ## Build our Docker container
-	@echo "🚀 Building our docker image,,,"
+	@echo "🚀  Building our docker image,,,"
 	@export DOCKER_BUILDKIT=1
-	@docker image build -t example/troload:latest .
-	@echo "🚀  Ok then I will run Docker Scout quickview..."
-	@docker scout quickview
+	@docker image build -t jasmit/troload:latest .
+	#  @echo "🚀  Running docker scout quickview..."
+	#  @docker scout quickview
+	#  @echo "🚀  Running docker scout cves..."
+	#  @docker scout cves local://jasmit/troload:latest
 
 .PHONY: dr-run
 dr-run: ## Run this project's container
-	@echo "🚀 Running the container: Running Docker container"
-	@docker container run --rm -it example/troload:latest
+	# @cp -R /Volumes/SharedSpace/TROStage/devl/*.xlsx ./stage/
+	@echo "🚀  Running the container..."
+	@docker container run -it --rm \
+		--mount type=bind,source=./logs,target=/opt/app/troload/logs \
+		--mount type=bind,source=./reports,target=/opt/app/troload/reports \
+		--mount type=bind,source=./stage,target=/opt/app/troload/stage \
+		jasmit/troload:latest -e devl -t tran
+
+.PHONY: dr-bash
+dr-bash:
+	@echo "🚀  Cionnecting to running docker container..."
+	@docker container run --rm -it --entrypoint /bin/bash -v ./logs:/opt/app/troload/logs -v ./reports:/opt/app/troload/reports -v ./stage:/opt/app/troload/stage jasmit/troload:latest
+	@docker ps --all
+
+.PHONY: dr-get-ip
+dr-get-ip:
+	@echo "🚀  Cionnecting to running docker container..."
+	@docker inspect --format '{{ .NetworkSettings.IPAddress }}' jasmit/troload:latest
+
+.PHONY: dr-status
+dr-status:
+	@echo "🚀  Checking the status of all docker containers..."
+	@docker ps --all
+
+################################################################################
 
 .PHONY: help
 help:

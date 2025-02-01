@@ -33,7 +33,8 @@ from std_logging import StdLogging, function_logger
 class TestLoadCategories(TestCase):
     # ---------------------------------------------------------------------------------------------------------------------
     def __init__(self, testName):
-        super(TestLoadCategories, self).__init__(testName)
+        #  super(TestLoadCategories, self).__init__(testName)
+        super().__init__(testName)
         self._logger = StdLogging(f"logs/{__name__}.log")
 
         self._db_conn = get_database_connection("devl")

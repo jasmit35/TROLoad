@@ -72,7 +72,7 @@ class CategoriesTable:
             returning category_id
         """
         with self._db_conn.cursor() as cursor:
-            category_id = cursor.execute(
+            cursor.execute(
                 sql,
                 (
                     category_data.category_name,
@@ -80,7 +80,9 @@ class CategoriesTable:
                     category_data.category_group_fk,
                 ),
             )
-        return category_id
+            results = cursor.fetchone()
+            if results:
+                return results
 
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger
@@ -116,10 +118,7 @@ class CategoriesTable:
             cursor.execute(sql, (category_id,))
             rows_deleted = cursor.rowcount
 
-            if rows_deleted == 1:
-                return True
-            else:
-                return False
+            return rows_deleted == 1
 
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger

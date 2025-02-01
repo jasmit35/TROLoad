@@ -2,7 +2,8 @@
 std_app.py
 """
 
-from config import Config
+import configparser
+
 from std_logging import StdLogging, function_logger
 
 
@@ -35,10 +36,11 @@ class StdApp:
     #  -----------------------------------------------------------------------------
     @function_logger
     def set_cfg_file_params(self):
-        cfgfile_path = self.cmdline_params.get("cfgfile")
-        cfgfile_all_parms = Config(cfgfile_path)
-
         environment = self.cmdline_params.get("environment")
 
-        cfgfile_env_parms = cfgfile_all_parms.get(environment)
-        return cfgfile_env_parms
+        cfgfile_path = self.cmdline_params.get("cfgfile")
+        config = configparser.ConfigParser()
+        with open(cfgfile_path) as file:
+            config.read_file(file)
+
+        return config[environment]

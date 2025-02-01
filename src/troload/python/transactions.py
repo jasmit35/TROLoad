@@ -151,10 +151,8 @@ class TransactionsTable:
         with self.db_conn.cursor() as cursor:
             cursor.execute(sql, (account_id, transaction_date, category_id, amount))
             row = cursor.fetchone()
-        if row is None:
-            transaction_id = None
-        else:
-            transaction_id = row[0]
+
+        transaction_id = None if row is None else row[0]
         return transaction_id
 
     def update_transaction(self, transaction_id, other_values):

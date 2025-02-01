@@ -79,7 +79,7 @@ class TransactionsExcelProcessor:
             max_col=1,
             values_only=True,
         ):
-            date_label = list(transaction)[0].split()
+            date_label = next(iter(transaction)).split()
             start_date = date_label[3]
             end_date = date_label[5]
             self._end_of_transactions_label = f"{start_date} - {end_date}"
@@ -148,14 +148,34 @@ class TransactionsExcelProcessor:
             max_col=7,
             values_only=True,
         ):
-            cat_name = transaction[0]
+            if len(transaction) < 6:
+                continue
 
-            if cat_name:
-                cat_id = self._categories_table.select_id_using_name(cat_name)
+            category_name = self.massage_category_name(transaction)
+
+            if category_name:
+                cat_id = self._categories_table.select_id_using_name(category_name)
                 if cat_id is None:
-                    self.report(f"      {cat_name}\n")
-                    new_category = CategoryData(cat_name)
+                    self.report(f"      {category_name}\n")
+                    new_category = CategoryData(category_name)
                     self._categories_table.insert(new_category)
+
+    #  ----------------------------------------------------------------------
+    @function_logger
+    def massage_category_name(self, transaction):
+        category_name = transaction[category_col]
+        if category_name is None:
+            if transaction[number_col] == "Added":
+                category_name = "Added"
+            if transaction[number_col] == "Bought":
+                category_name = "Bought"
+            if transaction[number_col] == "Removed":
+                category_name = "Removed"
+            if transaction[number_col] == "StkSplit":
+                category_name = "Stock Split"
+            if transaction[number_col] == "Sold":
+                category_name = "Sold"
+        return category_name
 
     #  ----------------------------------------------------------------------
     @function_logger
@@ -205,7 +225,7 @@ class TransactionsExcelProcessor:
                 iso_date_string = str(transaction_date_string.split()[0])
                 transaction_date = datetime.date.fromisoformat(iso_date_string)
 
-                category_name = transaction[category_col]
+                # category_name = transaction[category_col]
                 category_id = self.resolve_category_id(transaction)
 
                 amount = transaction[amount_col]
@@ -237,18 +257,7 @@ class TransactionsExcelProcessor:
     #  ----------------------------------------------------------------------
     @function_logger
     def resolve_category_id(self, transaction):
-        category_name = transaction[category_col]
-        if category_name is None:
-            if transaction[number_col] == "Added":
-                category_name = "Added"
-            if transaction[number_col] == "Bought":
-                category_name = "Bought"
-            if transaction[number_col] == "Removed":
-                category_name = "Removed"
-            if transaction[number_col] == "StkSplit":
-                category_name = "Stock Split"
-            if transaction[number_col] == "Sold":
-                category_name = "Sold"
+        category_name = self.massage_category_name(transaction[category_col])
 
         category_id = self._categories_table.select_id_using_name(category_name)
 

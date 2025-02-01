@@ -114,17 +114,14 @@ class CategoriesCSVProcessor:
             if existing_row[3] != category_data.category_group_fk:
                 apply_updates = True
 
-            if len(existing_row) > 4:
-                if existing_row[4] != category_data.category_description:
-                    apply_updates = True
+            if len(existing_row) > 4 and existing_row[4] != category_data.category_description:
+                apply_updates = True
 
-            if len(existing_row) > 5:
-                if existing_row[5] != category_data.category_tax_line_item:
-                    apply_updates = True
+            if len(existing_row) > 5 and existing_row[5] != category_data.category_tax_line_item:
+                apply_updates = True
 
-            if len(existing_row) > 6:
-                if existing_row[6] != category_data.category_hidden:
-                    apply_updates = True
+            if len(existing_row) > 6 and existing_row[6] != category_data.category_hidden:
+                apply_updates = True
 
             if apply_updates:
                 report_str = category_data.get_short_str()
@@ -159,7 +156,8 @@ class CategoriesCSVProcessor:
                     + new_category_name.lstrip()
                 )
             if leading_spaces not in [3, 6, 9]:
-                raise ValueError(f"Unexpected leading_spaces = {leading_spaces}")
+                msg = f"Unexpected leading_spaces = {leading_spaces}"
+                raise ValueError(msg)
         return new_category_name
 
     # ---------------------------------------------------------------------------------------------------------------------

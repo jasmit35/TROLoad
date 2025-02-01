@@ -22,18 +22,16 @@ class Account:
 class AccountsTable:
     def __init__(self, db_conn) -> None:
         self.db_conn = db_conn
-        self.existing_accounts = {}
-        self.load_existing()
 
-    #  ----------------------------------------------------------------------
-    def load_existing(self):
         sql = """
             select account_name, account_id
             from tro.accounts
         """
+
         with self.db_conn.cursor() as cursor:
             cursor.execute(sql)
             results = cursor.fetchall()
+
         self.existing_accounts = dict(results)
 
     #  ----------------------------------------------------------------------

@@ -1,16 +1,14 @@
 [project]
 name = "TROLoad"
-version = "1.2.0"
+version = "1.2.1"
 description = "Pod to load data from Quicken into the TRO database."
 authors = [{ name = "Jeff Smith", email = "jasmit@swbell.net" }]
 readme = "README.md"
 keywords = ['python']
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "config>=0.5.1",
     "openpyxl>=3.1.5",
     "psycopg2-binary>=2.9.9",
-    "python-dotenv>=1.0.1",
 ]
 
 [project.urls]
@@ -18,23 +16,19 @@ Homepage = "https://jasmit.github.io/TROLoad/"
 Repository = "https://github.com/jasmit/TROLoad"
 Documentation = "https://jasmit.github.io/TROLoad/"
 
-[copyfiles]
-python = [
-    "/Users/jeff/devl/TRO/src/tro/python/categories_table.py"
-]
+#  [copyfiles]
+#  python = [
+#      "/Users/jeff/devl/TRO/src/tro/python/categories_table.py"
+#  ]
 
 [tool.uv]
 dev-dependencies = [
-    "autoflake>=2.3.1",
-    "deptry>=0.20.0",
-    "mkdocs>=1.6.1",
     "mkdocs-material>=8.5.10",
-    "mkdocstrings[python]>=0.19.0",
+    "mkdocstrings[python]>=0.26.1",
     "mypy>=0.991",
     "pre-commit>=2.20.0",
-    "pytest>=7.2.0",
     "pytest-cov>=4.0.0",
-    "ruff>=0.0.235",
+    "ruff>=0.6.9",
     "tox-uv>=1.11.3",
 ]
 
@@ -42,9 +36,22 @@ dev-dependencies = [
 requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
+[dependency-groups]
+dev = [
+    "autoflake>=2.3.1",
+    "config>=0.5.1",
+    "deptry>=0.20.0",
+    "mkdocs>=1.6.1",
+    "pytest>=8.3.3",
+]
+app = [
+    "openpyxl>=3.1.5",
+    "psycopg2-binary==2.9.9",
+]
+
 [tool.mypy]
 files = ["src"]
-disallow_any_unimported = "True"
+disallow_any_unimported = "False"
 no_implicit_optional = "True"
 check_untyped_defs = "True"
 warn_return_any = "True"
@@ -64,6 +71,7 @@ testpaths = ["tests"]
 target-version = "py39"
 line-length = 120
 fix = true
+src = ["src"]
 
 [tool.ruff.format]
 preview = true
@@ -117,3 +125,7 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 source = ["troload"]
+
+#  jasmit  Added following
+[tool.deptry]
+ignore = ["DEP001"]
