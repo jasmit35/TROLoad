@@ -14,7 +14,6 @@ import datetime
 import openpyxl
 from accounts import AccountsTable
 from categories_table import CategoriesTable
-from category_data import CategoryData
 from std_logging import function_logger, getLogger
 from transactions import InvalidTransactionException, Transaction, TransactionsTable
 
@@ -31,10 +30,10 @@ amount_col = 10
 
 
 # ======================================================================
-class TransactionsExcelProcessor:
+class TransactionsProcessor:
     def __init__(self, db_conn, file_path, report):
         self._logger = getLogger()
-        self._logger.info(f"Begin 'TransactionsExcelProcessor.__init__({file_path=})")
+        self._logger.info(f"Begin 'TransactionsProcessor.__init__({file_path=})")
 
         self._db_conn = db_conn
         self._file_path = file_path
@@ -43,11 +42,12 @@ class TransactionsExcelProcessor:
         self._workbook = openpyxl.load_workbook(filename=file_path)
         self._accounts_table = AccountsTable(db_conn)
         self._categories_table = CategoriesTable(db_conn)
-        self._end_of_transactions_label = None
+
+    #         self._end_of_transactions_label = None
 
     # ---------------------------------------------------------------------------------------------------------------------
     def __str__(self):
-        return f"TransactionsExcelProcessor({self._file_path=})"
+        return f"TransactionsProcessor({self._file_path=})"
 
     __repr__ = __str__
 
@@ -58,13 +58,10 @@ class TransactionsExcelProcessor:
     # ----------------------------------------------------------------------
     @function_logger
     def process_excel_file(self):
-        """
-        Process the Excel file by loading new accounts and categories and
-        then loading the transactions.
-        """
+        """ """
         start_date, end_date = self.extract_date_range()
         self.load_any_new_accounts()
-        self.load_any_new_categories()
+        #  self.load_any_new_categories()
         self.load_transactions_from_workbook()
         return 0
 
@@ -136,52 +133,9 @@ class TransactionsExcelProcessor:
 
     #  ----------------------------------------------------------------------
     @function_logger
-    def load_any_new_categories(self):
-        sheet = self._workbook.active
-
-        self.report("\n\n    The following new categories have been added:\n")
-
-        for transaction in sheet.iter_rows(
-            min_row=6,
-            max_row=99999,
-            min_col=7,
-            max_col=7,
-            values_only=True,
-        ):
-            if len(transaction) < 6:
-                continue
-
-            category_name = self.massage_category_name(transaction)
-
-            if category_name:
-                cat_id = self._categories_table.select_id_using_name(category_name)
-                if cat_id is None:
-                    self.report(f"      {category_name}\n")
-                    new_category = CategoryData(category_name)
-                    self._categories_table.insert(new_category)
-
-    #  ----------------------------------------------------------------------
-    @function_logger
-    def massage_category_name(self, transaction):
-        category_name = transaction[category_col]
-        if category_name is None:
-            if transaction[number_col] == "Added":
-                category_name = "Added"
-            if transaction[number_col] == "Bought":
-                category_name = "Bought"
-            if transaction[number_col] == "Removed":
-                category_name = "Removed"
-            if transaction[number_col] == "StkSplit":
-                category_name = "Stock Split"
-            if transaction[number_col] == "Sold":
-                category_name = "Sold"
-        return category_name
-
-    #  ----------------------------------------------------------------------
-    @function_logger
     def load_transactions_from_workbook(self):
         """
-        Read each row of the spreadsheet and turn it into a transaction
+        Real each row of the spreadsheet and turn it into a transaction
         record.
 
         Returns:
@@ -225,8 +179,8 @@ class TransactionsExcelProcessor:
                 iso_date_string = str(transaction_date_string.split()[0])
                 transaction_date = datetime.date.fromisoformat(iso_date_string)
 
-                # category_name = transaction[category_col]
-                category_id = self.resolve_category_id(transaction)
+                category_name = self._set_category_name(transaction)
+                category_id = self._categories_table.get_id_using_name(category_name)
 
                 amount = transaction[amount_col]
 
@@ -256,15 +210,57 @@ class TransactionsExcelProcessor:
 
     #  ----------------------------------------------------------------------
     @function_logger
-    def resolve_category_id(self, transaction):
-        category_name = self.massage_category_name(transaction[category_col])
+    def _set_category_name(self, transaction):
+        category_name = transaction[category_col]
+        if category_name is None:
+            if transaction[number_col] == "Added":
+                category_name = "Added"
+            if transaction[number_col] == "Bought":
+                category_name = "Bought"
+            if transaction[number_col] == "Removed":
+                category_name = "Removed"
+            if transaction[number_col] == "StkSplit":
+                category_name = "Stock Split"
+            if transaction[number_col] == "Sold":
+                category_name = "Sold"
+        return category_name
 
-        category_id = self._categories_table.select_id_using_name(category_name)
+    #     #  ----------------------------------------------------------------------
+    #     @function_logger
+    #     def resolve_category_id(self, category_name):
+    #         category_name = self._massage_category_name(category_name)
+    #         category_id = self._categories_table.get_id_using_name(category_name)
+    #
+    #         if category_id is None:
+    #             raise InvalidTransactionException(
+    #                 Transaction,
+    #                 f"This transaction has an invalid category - '{category_name}'",
+    #             )
+    #
+    #         return category_id
 
-        if category_id is None:
-            raise InvalidTransactionException(
-                transaction,
-                f"This transaction has an invalid category - '{category_name}'",
-            )
+    # #  ----------------------------------------------------------------------
+    # @function_logger
+    # def load_any_new_categories(self):
+    #     sheet = self._workbook.active
 
-        return category_id
+    #     self.report("\n\n    The following new categories have been added:\n")
+
+    #     for transaction in sheet.iter_rows(
+    #         min_row=6,
+    #         max_row=99999,
+    #         min_col=7,
+    #         max_col=7,
+    #         values_only=True,
+    #     ):
+    #         if len(transaction) < 6:
+    #             continue
+
+    #         category_name = self._massage_category_name(transaction)
+
+    #         if category_name:
+    #             cat_id = self._categories_table.select_id_using_name(category_name)
+    #             if cat_id is None:
+    #                 self.report(f"      {category_name}\n")
+    #                 new_category = CategoryData(category_name)
+    #                 self._categories_table.insert(new_category)

@@ -14,7 +14,7 @@ from std_logging import function_logger
 from std_report import StdReport
 
 #  from transactions import TransactionsTable
-from transactions_excel_processor import TransactionsExcelProcessor
+from transactions_excel_processor import TransactionsProcessor
 
 """
 # Add TROLoads code to the path
@@ -118,7 +118,7 @@ class TroLoadApp(StdApp):
 
         if suffix == ".xlsx" and processing_type == "tran":
             self.report(f"processing file {file_path}\n")
-            processor = TransactionsExcelProcessor(self._db_conn, file_path, self.output_report)
+            processor = TransactionsProcessor(self._db_conn, file_path, self.output_report)
             rc = processor.process_excel_file()
             return rc
 

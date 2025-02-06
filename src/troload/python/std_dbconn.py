@@ -2,13 +2,13 @@
 std_dbconn
 """
 
-import configparser
+from configparser import ConfigParser
 
 from psycopg2 import OperationalError, connect
 
 
 def get_database_connection(environment):
-    config = configparser.ConfigParser()
+    config = ConfigParser()
     config.read("./etc/.db_secrets.cfg")
 
     host_name = config[environment]["hostname"]
@@ -18,7 +18,7 @@ def get_database_connection(environment):
     password = config[environment]["password"]
 
     #  connstr = f"dbname={database} user={username} password={password} host={host_name} port={host_port}"
-    connstr = f"dbname={database} user={username} password={password} host={host_name} port={host_port}"
+    connstr = f"host={host_name} port={host_port} dbname={database} user={username} password={password} "
 
     connection = None
     try:

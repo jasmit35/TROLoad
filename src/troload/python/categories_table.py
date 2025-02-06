@@ -16,16 +16,14 @@ Methods:
 
 """
 
-import os
-import sys
 from logging import getLogger
 
-code_path = os.path.abspath("../tro/python")
-sys.path.append(code_path)
+from category_data import CategoryData
 
-code_path = os.path.abspath("../local/python")
-sys.path.append(code_path)
-
+#  code_path = os.path.abspath("../tro/python")
+#  sys.path.append(code_path)
+#  code_path = os.path.abspath("../local/python")
+#  sys.path.append(code_path)
 from std_logging import function_logger
 
 
@@ -36,6 +34,10 @@ class CategoriesTable:
         self._logger.info(f"Begin 'CategoriesTable.__init__' arguments - ({db_conn=})")
 
         self._db_conn = db_conn
+        self._cache = {}
+        self._new_names = []
+
+        self._load_cache()
 
         self._logger.info("End   'CategoriesTable.__init__' returns - None")
 
@@ -44,6 +46,32 @@ class CategoriesTable:
         return "CategoriesTable"
 
     __repr__ = __str__
+
+    # ---------------------------------------------------------------------------------------------------------------------
+    def _load_cache(self):
+        self._logger.info("Begin 'CategoriesTable._load_cache' arguments - None")
+
+        sql = """
+            select category_name, category_id
+            from tro.categories
+            order by category_name
+        """
+        with self._db_conn.cursor() as cursor:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            for result in results:
+                self._cache[result[0]] = result[1]
+
+        self._logger.info("End   'CategoriesTable._load_cache' returns - None")
+
+    # ---------------------------------------------------------------------------------------------------------------------
+    @function_logger
+    def get_id_using_name(self, category_name):
+        category_id = self._cache.get(category_name)
+        if category_id is None:
+            new_category = CategoryData(category_name)
+            category_id = self.insert(new_category)
+        return category_id
 
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger
@@ -65,6 +93,7 @@ class CategoriesTable:
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger
     def insert(self, category_data):
+        category_id = None
         sql = """
             insert into tro.categories
             (category_name, category_type_fk, category_group_fk)
@@ -82,7 +111,10 @@ class CategoriesTable:
             )
             results = cursor.fetchone()
             if results:
-                return results
+                category_id = results[0]
+                self._cache[category_data.category_name] = category_id
+                self._new_names.append(category_data.category_name)
+            return category_id
 
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger
