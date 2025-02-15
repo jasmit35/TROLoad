@@ -5,27 +5,27 @@
 #==================================================================
 
 # SYNTAX=docker/dockerfile:1
-
 FROM python:3.12 AS builder
-
-ENV APP_HOME="/opt/app/troload"
-#  ENV UV_HOME="0"
 
 #  Install the uv utility
 COPY --from=ghcr.io/astral-sh/uv:0.4.20 /uv /bin/uv
 
-#  Install python 3.12 into a virtual environment
-RUN uv python install 3.12
-#  RUN uv venv --python=3.12 $APP_HOME/.venv
-
-#  Set up the project file
+#  Install python 3.13 into a virtual environment
+#  RUN uv python install 3.13
+ENV APP_HOME="/opt/app/troload"
 RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
+RUN uv venv --python=3.12 $APP_HOME/.venv
+
+#  Set up the project file
 COPY pyproject.toml .
+RUN uv lock
+RUN uv pip install psycopg2-binary openpyxl
+
 
 #  Use uv to create the virtual environment with all
 #  requirements for the app but none for development
-RUN uv sync --no-dev
+#  RUN uv sync --no-dev
 
 ##==================================================================
 ##  Part 2:
@@ -35,24 +35,24 @@ RUN uv sync --no-dev
 
 FROM python:3-slim-bookworm
 
-ENV APP_HOME="/opt/app/troload"
-ENV VIRTUAL_ENV="$APP_HOME/.venv"
-
-#  Copy the pre-built virtual environment and the application code
-COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-#  Install the uv utility
-COPY --from=ghcr.io/astral-sh/uv:0.4.20 /uv /bin/uv
-RUN pip install psycopg2-binary openpyxl
-
-COPY ./src /opt/app
-
-WORKDIR $APP_HOME
-COPY pyproject.toml .
-
 #  Get any updates
 RUN apt-get -y update && \
     apt-get -y upgrade
+
+
+#  Copy the pre-built virtual environment and the application code
+ENV APP_HOME="/opt/app/troload"
+ENV VIRTUAL_ENV="$APP_HOME/.venv"
+COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+#  Install the uv utility
+#  COPY --from=ghcr.io/astral-sh/uv:0.4.20 /uv /bin/uv
+RUN pip install psycopg2-binary openpyxl pandas
+
+
+COPY ./src /opt/app
+WORKDIR $APP_HOME
+#  COPY pyproject.toml .
 
 #  Create a container id to run the app
 RUN groupadd -g 10000 container && \
@@ -63,7 +63,7 @@ WORKDIR $APP_HOME
 USER container:container
 
 #  Run it
-ENTRYPOINT ["python", "/opt/app/troload/python/troload.py"]
-CMD ["-e", "devl", "-t", "cat"]
+ENTRYPOINT ["python", "/opt/app/troload/python/troloadtrans.py"]
+CMD ["-e", "devl"]
 
 #  CMD ["/bin/bash"]

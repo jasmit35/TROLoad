@@ -1,14 +1,14 @@
 [project]
-name = "TROLoad"
+name = "TROLoadTrans"
 version = "1.2.1"
-description = "Pod to load data from Quicken into the TRO database."
+description = "Pod to load transaction data from Quicken into the TRO database."
 authors = [{ name = "Jeff Smith", email = "jasmit@swbell.net" }]
 readme = "README.md"
-keywords = ['python']
+keywords = ['python', 'pandas', 'quicken', 'database']
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "openpyxl>=3.1.5",
-    "psycopg2-binary>=2.9.9",
+    'pandas>=2.2.3',
+    'psycopg2-binary==2.9.9',
 ]
 
 [project.urls]
@@ -21,33 +21,32 @@ Documentation = "https://jasmit.github.io/TROLoad/"
 #      "/Users/jeff/devl/TRO/src/tro/python/categories_table.py"
 #  ]
 
-[tool.uv]
-dev-dependencies = [
-    "mkdocs-material>=8.5.10",
-    "mkdocstrings[python]>=0.26.1",
-    "mypy>=0.991",
-    "pre-commit>=2.20.0",
-    "pytest-cov>=4.0.0",
-    "ruff>=0.6.9",
-    "tox-uv>=1.11.3",
-]
+#  [tool.uv]
+#  dev-dependencies = [
+#      "mkdocs-material>=8.5.10",
+#      "mkdocstrings[python]>=0.26.1",
+#      "mypy>=0.991",
+#      "pre-commit>=2.20.0",
+#      "pytest-cov>=4.0.0",
+#      "ruff>=0.6.9",
+#      "tox-uv>=1.11.3",
+#  ]
 
-[build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
+#  [build-system]
+#  requires = ["setuptools >= 61.0"]
+#  build-backend = "setuptools.build_meta"
 
-[dependency-groups]
-dev = [
-    "autoflake>=2.3.1",
-    "config>=0.5.1",
-    "deptry>=0.20.0",
-    "mkdocs>=1.6.1",
-    "pytest>=8.3.3",
-]
-app = [
-    "openpyxl>=3.1.5",
-    "psycopg2-binary==2.9.9",
-]
+#  [dependency-groups]
+#  dev = [
+#      "autoflake>=2.3.1",
+#      "config>=0.5.1",
+#      "deptry>=0.20.0",
+#      "mkdocs>=1.6.1",
+#      "pytest>=8.3.3",
+#  ]
+#  app = [
+#      "openpyxl>=3.1.5",
+#  ]
 
 [tool.mypy]
 files = ["src"]
@@ -57,11 +56,7 @@ check_untyped_defs = "True"
 warn_return_any = "True"
 warn_unused_ignores = "True"
 show_error_codes = "True"
-#
-#  jasmit  Added following
 ignore_missing_imports = "True"
-#
-#  jasmit  Switched following
 disallow_untyped_defs = "False"
 
 [tool.pytest.ini_options]
@@ -117,6 +112,10 @@ ignore = [
     # Starting a process with a shell
     "S605",
     "S607",
+    #  Use context manager for files
+    "SIM115",
+    # Long messsages
+    "TRY003",
 ]
 
 [tool.coverage.report]
@@ -126,6 +125,5 @@ skip_empty = true
 branch = true
 source = ["troload"]
 
-#  jasmit  Added following
 [tool.deptry]
 ignore = ["DEP001"]

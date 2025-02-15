@@ -1,5 +1,5 @@
 """
-TROLoad Import data in variosus formats into the TRO database.
+TROLoadTrans Import transactions from a CSV file into the database.
 """
 
 from argparse import ArgumentParser
@@ -7,28 +7,14 @@ from pathlib import Path
 from traceback import print_exc
 
 from __init__ import __version__ as Version
-from categories_CSV_processor import CategoriesCSVProcessor
 from std_app import StdApp
 from std_dbconn import get_database_connection
 from std_logging import function_logger
 from std_report import StdReport
+from transactions_processor import TransactionsProcessor
 
+#  from categories_CSV_processor import CategoriesCSVProcessor
 #  from transactions import TransactionsTable
-from transactions_excel_processor import TransactionsProcessor
-
-"""
-# Add TROLoads code to the path
-code_path = os.path.abspath("./src/troload/python")
-PATH.append(code_path)
-
-# Add TRO code to the path
-code_path = os.path.abspath("../tro/python")
-PATH.append(code_path)
-
-# Add my standard code to the path
-code_path = os.path.abspath("../local/python")
-PATH.append(code_path)
-"""
 
 
 #  =============================================================================
@@ -41,7 +27,9 @@ class TroLoadApp(StdApp):
         self._max_return_code = 0
 
         environment = self.cmdline_params.get("environment")
-        environment = "devl" if environment is None or environment not in ["devl", "test", "prod"] else environment
+        if environment not in ["devl", "test", "prod"]:
+            raise ValueError(f"Invalid environment - {environment}")
+
         self._db_conn = get_database_connection(environment)
 
         self.output_report = StdReport("TROLoad", Version, rpt_file_path="reports/TROLoad.rpt")
@@ -49,7 +37,7 @@ class TroLoadApp(StdApp):
 
     # ---------------------------------------------------------------------------------------------------------------------
     def __str__(self):
-        return "TroLoadApp"
+        return "TroLoadTrans"
 
     __repr__ = __str__
 
@@ -60,19 +48,12 @@ class TroLoadApp(StdApp):
     #  -----------------------------------------------------------------------------
     @function_logger
     def set_cmdline_params(self):
-        parser = ArgumentParser(description="TROLoad")
+        parser = ArgumentParser(description="TROLoadTrans")
         parser.add_argument(
             "-e",
             "--environment",
             required=True,
             help="Environment - devl, test or prod",
-        )
-        parser.add_argument(
-            "-t",
-            "--type",
-            required=True,
-            choices=["cat", "tran"],
-            help="Type of the file being loaded - cat for categories, tran for transactions",
         )
         parser.add_argument(
             "-c",
@@ -85,45 +66,29 @@ class TroLoadApp(StdApp):
         return vars(args)
 
     #  -----------------------------------------------------------------------------
-    # Process all files in the stage directory
+    #  Process the
     @function_logger
-    def process(self):
+    def process_all_files(self):
         stage_dir = self.cfg_file_params.get("stage_dir", "stage")
         stage_dir_path = Path(stage_dir)
         self.report(f"processing files in {stage_dir_path}\n")
 
         for stage_file in stage_dir_path.iterdir():
-            self.report(f"processing file {stage_file}\n")
+            if stage_file.suffix != ".xlsx":
+                continue
+            self.report(f"  processing file {stage_file}\n")
 
-            rc = self.dispatch_file(stage_file)
+            trans_processor = TransactionsProcessor(self._db_conn, self.output_report, stage_file)
+            rc = trans_processor.process_one_file()
             if int(rc) > self._max_return_code:
                 self._max_return_code = rc
+
+            new_file_path = f"{stage_file}.bkp"
+            stage_file.rename(new_file_path)
 
         self.output_report.print_footer(self._max_return_code)
 
         return self._max_return_code
-
-    #  -----------------------------------------------------------------------------
-    # if this is a file we can process, dispatch it to the appropriate processor
-    @function_logger
-    def dispatch_file(self, file_path):
-        suffix = file_path.suffix
-        processing_type = self.cmdline_params.get("type")
-
-        if suffix == ".csv" and processing_type == "cat":
-            self.report(f"processing file {file_path}\n")
-            processor = CategoriesCSVProcessor(self._db_conn, file_path, self.output_report)
-            rc = processor.process_categories_file()
-            return rc
-
-        if suffix == ".xlsx" and processing_type == "tran":
-            self.report(f"processing file {file_path}\n")
-            processor = TransactionsProcessor(self._db_conn, file_path, self.output_report)
-            rc = processor.process_excel_file()
-            return rc
-
-        self.report(f"ignoring file   {file_path}\n")
-        return 0
 
 
 """    #  -----------------------------------------------------------------------------
@@ -155,8 +120,8 @@ class TroLoadApp(StdApp):
 #  =============================================================================
 if __name__ == "__main__":
     try:
-        this_app = TroLoadApp("TROLoad", Version)
-        this_app.process()
+        this_app = TroLoadApp("TROLoadTrans", Version)
+        this_app.process_all_files()
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")
         print_exc()

@@ -61,32 +61,35 @@ docs: ## Build and serve the documentation
 dr-build: clean-build ## Build our Docker container
 	@echo "🚀  Building our docker image,,,"
 	@export DOCKER_BUILDKIT=1
-	@docker image build -t jasmit/troload:latest .
+	@docker image build -t jasmit/troloadtrans:latest .
 	#  @echo "🚀  Running docker scout quickview..."
 	#  @docker scout quickview
 	#  @echo "🚀  Running docker scout cves..."
-	#  @docker scout cves local://jasmit/troload:latest
+	#  @docker scout cves local://jasmit/troloadtrans:latest
 
 .PHONY: dr-run
 dr-run: ## Run this project's container
-	# @cp -R /Volumes/SharedSpace/TROStage/devl/*.xlsx ./stage/
+	# @rm ./logs/*
+	# @rm ./reports/*
+	# @rm ./stage/*
+	@cp -R /Volumes/SharedSpace/TROStage/devl/*.xlsx ./stage/
 	@echo "🚀  Running the container..."
 	@docker container run -it --rm \
 		--mount type=bind,source=./logs,target=/opt/app/troload/logs \
 		--mount type=bind,source=./reports,target=/opt/app/troload/reports \
 		--mount type=bind,source=./stage,target=/opt/app/troload/stage \
-		jasmit/troload:latest -e devl -t tran
+		jasmit/troloadtrans:latest -e devl
 
 .PHONY: dr-bash
 dr-bash:
 	@echo "🚀  Cionnecting to running docker container..."
-	@docker container run --rm -it --entrypoint /bin/bash -v ./logs:/opt/app/troload/logs -v ./reports:/opt/app/troload/reports -v ./stage:/opt/app/troload/stage jasmit/troload:latest
+	@docker container run --rm -it --entrypoint /bin/bash -v ./logs:/opt/app/troload/logs -v ./reports:/opt/app/troload/reports -v ./stage:/opt/app/troload/stage jasmit/troloadtrans:latest
 	@docker ps --all
 
 .PHONY: dr-get-ip
 dr-get-ip:
 	@echo "🚀  Cionnecting to running docker container..."
-	@docker inspect --format '{{ .NetworkSettings.IPAddress }}' jasmit/troload:latest
+	@docker inspect --format '{{ .NetworkSettings.IPAddress }}' jasmit/troloadtrans:latest
 
 .PHONY: dr-status
 dr-status:
