@@ -32,7 +32,7 @@ class TroLoadApp(StdApp):
 
         self._db_conn = get_database_connection(environment)
 
-        self.output_report = StdReport("TROLoad", Version, rpt_file_path="reports/TROLoad.rpt")
+        self.output_report = StdReport("TROLoadTrans", Version, rpt_file_path="reports/TROLoadTrans.rpt")
         self.output_report.print_header()
 
     # ---------------------------------------------------------------------------------------------------------------------

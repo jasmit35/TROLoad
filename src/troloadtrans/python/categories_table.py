@@ -62,7 +62,9 @@ class CategoriesTable:
             for result in results:
                 self._cache[result[0]] = result[1]
 
-        self._logger.info("End   'CategoriesTable._load_cache' returns - None")
+            entries = len(self._cache)
+
+        self._logger.info(f"End   'CategoriesTable._load_cache' returns - {entries}")
 
     # ---------------------------------------------------------------------------------------------------------------------
     @function_logger

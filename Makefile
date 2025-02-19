@@ -69,15 +69,15 @@ dr-build: clean-build ## Build our Docker container
 
 .PHONY: dr-run
 dr-run: ## Run this project's container
-	# @rm ./logs/*
-	# @rm ./reports/*
-	# @rm ./stage/*
+	@rm ./logs/*
+	@rm ./reports/*
+	@rm ./stage/*
 	@cp -R /Volumes/SharedSpace/TROStage/devl/*.xlsx ./stage/
 	@echo "🚀  Running the container..."
 	@docker container run -it --rm \
-		--mount type=bind,source=./logs,target=/opt/app/troload/logs \
-		--mount type=bind,source=./reports,target=/opt/app/troload/reports \
-		--mount type=bind,source=./stage,target=/opt/app/troload/stage \
+		--mount type=bind,source=./logs,target=/opt/app/troloadtrans/logs \
+		--mount type=bind,source=./reports,target=/opt/app/troloadtrans/reports \
+		--mount type=bind,source=./stage,target=/opt/app/troloadtrans/stage \
 		jasmit/troloadtrans:latest -e devl
 
 .PHONY: dr-bash
