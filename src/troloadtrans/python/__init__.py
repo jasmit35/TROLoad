@@ -1,2 +1,2 @@
 #
-__version__ = "feature/v1.2.0"
+__version__ = "feature/v1.0.0"

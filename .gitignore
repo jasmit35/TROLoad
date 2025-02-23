@@ -129,4 +129,5 @@ cython_debug/
 #
 #  Customize for TROLoad
 #
+*.bkp
 TROLoad.code-workspace

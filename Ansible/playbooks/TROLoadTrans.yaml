@@ -1,0 +1,53 @@
+---
+
+- name: Deploy the TROLoadTrans application
+  hosts: vagrant1
+  gather_facts: true
+
+  vars:
+    env: devl
+
+  tasks:
+    - name: Ensure the group 'appgroup' exist
+      become: true
+      ansible.builtin.group:
+        name: appgroup
+        state: present
+        gid: 10000
+
+    - name: Ensure the user 'appuser' exist
+      become: true
+      ansible.builtin.user:
+        name: appuser
+        group: appgroup
+        comment: User with minimal privilages used to run the application
+        state: present
+        shell: /bin/bash
+        uid: 10000
+        hidden: true
+
+    - name: The application home for macOS
+      ansible.builtin.set_fact:
+        app_home: "/Users/appuser/{{ env }}/TROLoadTrans"
+      when: ansible_distribution == 'Darwin'
+
+    - name: The application home for Linux
+      ansible.builtin.set_fact:
+        app_home: "/home/appuser/{{ env }}/TROLoadTrans"
+      when: ansible_distribution == 'Debian'
+
+    - name: Display value
+      ansible.builtin.debug:
+        msg: "app_home={{ app_home }}"
+
+    - name: Create the application's home
+      become: true
+      ansible.builtin.file:
+        path: "{{ app_home }}"
+        state: directory
+        group: appgroup
+        owner: appuser
+        mode: '0750'
+        recurse: true
+
+...

@@ -57,28 +57,31 @@ docs: ## Build and serve the documentation
 #
 ################################################################################
 
+app_version := '1.0.0'
+environment := 'devl'
+
 .PHONY: dr-build
 dr-build: clean-build ## Build our Docker container
 	@echo "🚀  Building our docker image,,,"
 	@export DOCKER_BUILDKIT=1
-	@docker image build -t jasmit/troloadtrans:latest .
+	@docker image build -t jasmit/troloadtrans:$(app_version) .
 	#  @echo "🚀  Running docker scout quickview..."
 	#  @docker scout quickview
 	#  @echo "🚀  Running docker scout cves..."
-	#  @docker scout cves local://jasmit/troloadtrans:latest
+	#  @docker scout cves local://jasmit/troloadtrans:$(app_version)
 
 .PHONY: dr-run
 dr-run: ## Run this project's container
-	@rm ./logs/*
-	@rm ./reports/*
-	@rm ./stage/*
-	@cp -R /Volumes/SharedSpace/TROStage/devl/*.xlsx ./stage/
+	- rm ./logs/*
+	- rm ./reports/*
+	- rm ./stage/*
+	- cp -R /Volumes/SharedSpace/TROStage/devl/*.xlsx ./stage/
 	@echo "🚀  Running the container..."
 	@docker container run -it --rm \
 		--mount type=bind,source=./logs,target=/opt/app/troloadtrans/logs \
 		--mount type=bind,source=./reports,target=/opt/app/troloadtrans/reports \
 		--mount type=bind,source=./stage,target=/opt/app/troloadtrans/stage \
-		jasmit/troloadtrans:latest -e devl
+		jasmit/troloadtrans:$(app_version) -e $(environment) 
 
 .PHONY: dr-bash
 dr-bash:

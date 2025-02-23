@@ -28,7 +28,7 @@ Run Quicken and select the following options:
 
 Verify the spreadsheet is in the correct directory with the xlsx extension:
 
-`ll '/Volumes/SharedSpace/<environment>/TROStage'`
+`ll '/Volumes/SharedSpace/TROStage/<environment>'`
 
 Use the makefile to run the application:
 
@@ -38,15 +38,6 @@ make dr-run
 
 Review the log files from the load. If their are problems that can be corrected via Quicken, do so and start over at 'Monthly Processing'.
 
-Add the previously found missing transactions:
-
-```
-cd ../sql
-vi add_missing.sql
-psql -h kmaster -p 5432 -d prod -U postgres
-\i add_missing.sql
-\q
-```
 
 ### Check balances
 
