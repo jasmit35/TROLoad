@@ -20,18 +20,18 @@ syntax-check:
 	ansible-playbook --syntax-check ${PLAYBOOK} --extra-vars "HOSTS=${HOSTS}" 
 	if [ $$? -eq 0 ]; \
 	then \
-		printf "     syntax check successful!\n"; \
+		printf "      syntax check successful!\n"; \
 	fi
 
 #==========================================================================================
 
 .PHONY: ansible-lint
 ansible-lint:
-	printf "\n🚀      Performing ansible linting...\n"
+	printf "\n🚀    Performing ansible linting...\n"
 	/opt/homebrew/bin/ansible-lint ${PLAYBOOK}
 	if [ $$? -eq 0 ]; \
 	then \
-		printf "   ansible linting successful!\n"; \
+		printf "      ansible linting successful!\n"; \
 	fi
 
 #==========================================================================================

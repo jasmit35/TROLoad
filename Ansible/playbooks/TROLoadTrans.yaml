@@ -6,6 +6,8 @@
 
   vars:
     env: devl
+    app_version: feature/1.0.0
+    github_ssh_key: "{{ ansible_user_dir }}/.ssh/github_{{ ansible_hostname }}"
 
   tasks:
     - name: Ensure the group 'appgroup' exist
@@ -49,5 +51,32 @@
         owner: appuser
         mode: '0750'
         recurse: true
+
+    - name: Install Git
+      become: true
+      ansible.builtin.apt:
+        name: git
+        state: present
+        update_cache: true
+
+    - name: Generate ssh key pair
+      community.crypto.openssh_keypair:
+        path: "{{ github_ssh_key }}"
+
+    - name: Register key with GitHub
+      community.general.github_deploy_key:
+        owner: "jasmit35"
+        repository: "TROLoad"
+        name: "github-deploy-key"
+        key: "{{ github_ssh_key }}"
+        force: true
+        token: "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"
+
+    - name: Copy the code from GitHub
+      ansible.builtin.git:
+        repo: git@github.com:jasmit35/TROLoad.git
+        dest: /tmp/TROLoad
+        single_branch: true
+        version: "{{ app_version }}"
 
 ...

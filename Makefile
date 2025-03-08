@@ -57,7 +57,7 @@ docs: ## Build and serve the documentation
 #
 ################################################################################
 
-app_version := '1.0.0'
+app_version := 'feature_v1.0.0'
 environment := 'devl'
 
 .PHONY: dr-build
@@ -99,6 +99,10 @@ dr-status:
 	@echo "🚀  Checking the status of all docker containers..."
 	@docker ps --all
 
+.PHONY: dr-push-image
+dr-push-image:
+	docker push jasmit/troloadtrans:${app_version}
+
 ################################################################################
 
 .PHONY: help
@@ -110,3 +114,5 @@ help:
 #
 # docker container run --rm -ti 2a236efc3f06 /bin/bash
 #
+
+

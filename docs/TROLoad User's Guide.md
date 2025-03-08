@@ -41,11 +41,15 @@ Review the log files from the load. If their are problems that can be corrected 
 
 ### Check balances
 
-Use the "Monthly Processing" instructions for the TROReports application to check the accuracy of the data for the month. If changes were made to the add_missing.sql script, repeat the load of the data.
+Chage to the sql directory and run the balances queries. (Be sure to adjust the dates in the SQL!)
 
-The report should end with a 'Fineshed successfully' message.
+```
+cd /Users/jeff/devl/TRO/src/tro/sql
+psql -d devl -U tro_ro
+\i as_of_balances_query.sql
+\i as_of_total_query.sql
+```
 
-jasmit
 Go back to Quicken and select the following options:
 
 - Reports
