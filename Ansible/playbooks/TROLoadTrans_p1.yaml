@@ -6,10 +6,19 @@
 
   vars:
     env: devl
+    app_name: TROLoadTrans
     app_version: feature/1.0.0
     github_ssh_key: "{{ ansible_user_dir }}/.ssh/github_{{ ansible_hostname }}"
 
   tasks:
+
+    - name: Install additional software
+      become: true
+      ansible.builtin.apt:
+        name: make
+        state: present
+        update_cache: true
+
     - name: Ensure the group 'appgroup' exist
       become: true
       ansible.builtin.group:
@@ -17,25 +26,25 @@
         state: present
         gid: 10000
 
-    - name: Ensure the user 'appuser' exist
+    - name: Ensure the user 'appowner' exist
       become: true
       ansible.builtin.user:
-        name: appuser
+        name: appowner
         group: appgroup
-        comment: User with minimal privilages used to run the application
+        comment: User that ownes the application
         state: present
         shell: /bin/bash
-        uid: 10000
+        uid: 10001
         hidden: true
 
     - name: The application home for macOS
       ansible.builtin.set_fact:
-        app_home: "/Users/appuser/{{ env }}/TROLoadTrans"
+        app_home: "/Users/appowner/{{ env }}/{{ app_name }}"
       when: ansible_distribution == 'Darwin'
 
     - name: The application home for Linux
       ansible.builtin.set_fact:
-        app_home: "/home/appuser/{{ env }}/TROLoadTrans"
+        app_home: "/home/appowner/{{ env }}/{{ app_name }}"
       when: ansible_distribution == 'Debian'
 
     - name: Display value
@@ -45,38 +54,24 @@
     - name: Create the application's home
       become: true
       ansible.builtin.file:
-        path: "{{ app_home }}"
+        path: "{{ item }}"
         state: directory
         group: appgroup
-        owner: appuser
+        owner: appowner
         mode: '0750'
-        recurse: true
-
-    - name: Install Git
-      become: true
-      ansible.builtin.apt:
-        name: git
-        state: present
-        update_cache: true
-
-    - name: Generate ssh key pair
-      community.crypto.openssh_keypair:
-        path: "{{ github_ssh_key }}"
-
-    - name: Register key with GitHub
-      community.general.github_deploy_key:
-        owner: "jasmit35"
-        repository: "TROLoad"
-        name: "github-deploy-key"
-        key: "{{ github_ssh_key }}"
-        force: true
-        token: "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"
+      loop:
+        - "{{ app_home }}"
+        - "{{ app_home }}/logs"
+        - "{{ app_home }}/reports"
+        - "{{ app_home }}/stage"
 
     - name: Copy the code from GitHub
       ansible.builtin.git:
         repo: git@github.com:jasmit35/TROLoad.git
         dest: /tmp/TROLoad
-        single_branch: true
         version: "{{ app_version }}"
+        accept_hostkey: true
+        remote: github
+        single_branch: true
 
 ...

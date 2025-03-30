@@ -1,0 +1,32 @@
+---
+
+- name: Run the task needed on the remote server
+
+  hosts: vagrant1
+
+  vars:
+    app_home: /home/appowner
+    env: devl
+
+  tasks:
+
+    - name: Copy the Makefile
+      become: true
+      ansible.builtin.copy:
+        remote_src: true
+        src: /tmp/TROLoad/Makefile
+        dest: "{{ app_home }}/{{ env }}/TROLoadTrans"
+        owner: appowner
+        group: appgroup
+        mode: '0644'
+
+    - name: Update the /etc/hosts file
+      become: true
+      ansible.builtin.template:
+        src: etc_hosts_linux.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+
+...

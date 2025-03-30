@@ -59,3 +59,5 @@ Go back to Quicken and select the following options:
 - Select the icon to customize the report.
 - Modify the end date.
 - Generate and print the report.
+
+If the balances dont match, determine why.
