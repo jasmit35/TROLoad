@@ -57,14 +57,14 @@ docs: ## Build and serve the documentation
 #
 ################################################################################
 
-app_version := 'feature_v1.0.0'
+app_version := 'feature_v2.0.0'
 environment := 'devl'
 
 .PHONY: dr-build
 dr-build: clean-build ## Build our Docker container
 	@echo "🚀  Building our docker image,,,"
 	@export DOCKER_BUILDKIT=1
-	@docker image build -t jasmit/troloadtrans:$(app_version) .
+	@docker image build -t jasmit/troloadbank:$(app_version) .
 	#  @echo "🚀  Running docker scout quickview..."
 	#  @docker scout quickview
 	#  @echo "🚀  Running docker scout cves..."
@@ -81,7 +81,7 @@ dr-run: ## Run this project's container
 		--mount type=bind,source=./logs,target=/opt/app/troloadtrans/logs \
 		--mount type=bind,source=./reports,target=/opt/app/troloadtrans/reports \
 		--mount type=bind,source=./stage,target=/opt/app/troloadtrans/stage \
-		jasmit/troloadtrans:$(app_version) -e $(environment) 
+		jasmit/troloadbank:$(app_version) -e $(environment) 
 
 .PHONY: dr-bash
 dr-bash:
