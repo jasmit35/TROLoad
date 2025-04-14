@@ -29,4 +29,14 @@
         group: root
         mode: '0644'
 
+    - name: Ensure daily run of TROLoadTrans is scheduled
+      become: true
+      ansible.builtin.cron:
+        user: "appuser"
+        name: "Daily TROLoadTrans"
+        minute: "0"
+        hour: "9"
+        weekday: "*"
+        job: "make dr-run"
+
 ...

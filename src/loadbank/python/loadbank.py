@@ -1,5 +1,5 @@
 """
-TROLoadTrans Import transactions from a CSV file into the database.
+loadback Import quicken banking transactions into the database.
 """
 
 from argparse import ArgumentParser

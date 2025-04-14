@@ -1,0 +1,29 @@
+---
+
+- name: Deploy the TROLoadTrans application
+  hosts: vagrant1
+  gather_facts: true
+
+  vars:
+    env: devl
+    app_name: TROLoadTrans
+    app_version: feature/1.0.0
+    github_ssh_key: "{{ ansible_user_dir }}/.ssh/github_{{ ansible_hostname }}"
+
+  tasks:
+    - name: Update and upgrade packages
+      become: true
+      ansible.builtin.apt:
+        update_cache: false
+        upgrade: dist
+
+    - name: Install additional required packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - git
+        - make
+
+...

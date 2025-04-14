@@ -11,13 +11,21 @@
     github_ssh_key: "{{ ansible_user_dir }}/.ssh/github_{{ ansible_hostname }}"
 
   tasks:
-
-    - name: Install additional software
+    - name: Update and upgrade packages
       become: true
       ansible.builtin.apt:
-        name: make
+        update_cache: false
+        upgrade: dist
+
+    - name: Install additional required packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ item }}"
         state: present
-        update_cache: true
+      with_items:
+        - cron
+        - git
+        - make
 
     - name: Ensure the group 'appgroup' exist
       become: true
@@ -35,6 +43,17 @@
         state: present
         shell: /bin/bash
         uid: 10001
+        hidden: true
+
+    - name: Ensure the user 'appuser' exist
+      become: true
+      ansible.builtin.user:
+        name: appuser
+        group: appgroup
+        comment: User with enough privilages to run the application
+        state: present
+        shell: /bin/bash
+        uid: 10000
         hidden: true
 
     - name: The application home for macOS
@@ -67,11 +86,8 @@
 
     - name: Copy the code from GitHub
       ansible.builtin.git:
-        repo: git@github.com:jasmit35/TROLoad.git
+        repo: https://github.com/jasmit35/TROLoad.git
         dest: /tmp/TROLoad
         version: "{{ app_version }}"
-        accept_hostkey: true
-        remote: github
-        single_branch: true
 
 ...
