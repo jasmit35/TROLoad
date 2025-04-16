@@ -1,3 +1,45 @@
+################################################################################
+#
+#  Docker stuff
+#
+################################################################################
+
+environment := 'devl'
+app_name := 'troloadbank'
+app_version := 'feature_v2.0.0'
+trans_type := 'bank'  #  'bank', 'invest', 'prop'
+
+.PHONY: dr-build
+dr-build: ## Build our Docker container
+	@echo "🚀  Building our docker image..."
+	@export DOCKER_BUILDKIT=1
+	docker image build -t jasmit/troloadbank:$(app_version) -f Dockerfile .
+	# @echo "🚀  Running docker scout quickview..."
+	# @docker scout quickview
+	#  @echo "🚀  Running docker scout cves..."
+	#  @docker scout cves local://jasmit/troloadtrans:$(app_version)
+
+.PHONY: dr-run
+dr-run: ## Run this project's container
+	- rm ./logs/*
+	- rm ./reports/*
+	- rm ./stage/*
+	- cp -R "/Volumes/SharedSpace/TROStage/devl/$(trans_type)*.xlsx" ./stage/
+	@echo "🚀  Running the container..."
+	@docker container run -it --rm \
+		--mount type=bind,source=./logs,target=/opt/app/$(app_name)/logs \
+		--mount type=bind,source=./reports,target=/opt/app/$(app_name)/reports \
+		--mount type=bind,source=./stage,target=/opt/app/$(app_name)/stage \
+		jasmit/$(app_name):$(app_version)
+
+		# jasmit/$(app_name):$(app_version) -e $(environment) 
+
+.PHONY: dr-bash
+dr-bash:
+	@echo "🚀  Connecting to running docker container..."
+	@docker container run --rm -it --entrypoint /bin/bash -v ./logs:/opt/app/$(app_name)/logs -v ./reports:/opt/app/$(app_name)/reports -v ./stage:/opt/app/$(app_name)/stage jasmit/$(app_name):$(app_version)
+
+################################################################################
 .PHONY: install
 install: ## Install the virtual environment and install the pre-commit hooks
 	@echo "🚀 Creating virtual environment using uv"
@@ -50,44 +92,6 @@ docs: ## Build and serve the documentation
 	@pandoc --toc=true -o '/Volumes/SharedSpace/Users/jeff/Project Documentation/Active/TROLoad System Guide.pdf' 'docs/TROLoad System Guide.md'
 	@pandoc --toc=true -o "/Volumes/SharedSpace/Users/jeff/Project Documentation/Active/TROLoad User's Guide.pdf" "docs/TROLoad User's Guide.md"
 	@uv run mkdocs serve
-
-################################################################################
-#
-#  Docker stuff
-#
-################################################################################
-
-app_version := 'feature_v2.0.0'
-environment := 'devl'
-
-.PHONY: dr-build
-dr-build: clean-build ## Build our Docker container
-	@echo "🚀  Building our docker image,,,"
-	@export DOCKER_BUILDKIT=1
-	@docker image build -t jasmit/troloadbank:$(app_version) .
-	#  @echo "🚀  Running docker scout quickview..."
-	#  @docker scout quickview
-	#  @echo "🚀  Running docker scout cves..."
-	#  @docker scout cves local://jasmit/troloadtrans:$(app_version)
-
-.PHONY: dr-run
-dr-run: ## Run this project's container
-	- rm ./logs/*
-	- rm ./reports/*
-	- rm ./stage/*
-	- cp -R /Volumes/SharedSpace/TROStage/devl/*.xlsx ./stage/
-	@echo "🚀  Running the container..."
-	@docker container run -it --rm \
-		--mount type=bind,source=./logs,target=/opt/app/troloadtrans/logs \
-		--mount type=bind,source=./reports,target=/opt/app/troloadtrans/reports \
-		--mount type=bind,source=./stage,target=/opt/app/troloadtrans/stage \
-		jasmit/troloadbank:$(app_version) -e $(environment) 
-
-.PHONY: dr-bash
-dr-bash:
-	@echo "🚀  Cionnecting to running docker container..."
-	@docker container run --rm -it --entrypoint /bin/bash -v ./logs:/opt/app/troload/logs -v ./reports:/opt/app/troload/reports -v ./stage:/opt/app/troload/stage jasmit/troloadtrans:latest
-	@docker ps --all
 
 .PHONY: dr-get-ip
 dr-get-ip:
