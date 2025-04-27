@@ -1,13 +1,17 @@
+#########################################
+
 [project]
-name = "TROLoadTrans"
-version = "1.2.1"
-description = "Pod to load transaction data from Quicken into the TRO database."
-authors = [{ name = "Jeff Smith", email = "jasmit@swbell.net" }]
+name = "TROLoadBank"
+version = "0.0.2"
+description = "Load banking transaction data from Quicken into the TRO database."
+authors = [{ name = "jasmit", email = "jasmit@swbell.net" }]
 readme = "README.md"
-keywords = ['python', 'pandas', 'quicken', 'database']
+keywords = ['python', 'pandas', 'quicken', 'postgres']
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "openpyxl>=3.1.5",
     "pandas>=2.2.3",
+    "psycopg2-binary>=2.9.10",
 ]
 
 [project.urls]
@@ -15,47 +19,37 @@ Homepage = "https://jasmit.github.io/TROLoad/"
 Repository = "https://github.com/jasmit/TROLoad"
 Documentation = "https://jasmit.github.io/TROLoad/"
 
-#  [tool.uv]
-#  dev-dependencies = [
-#      "mkdocs-material>=8.5.10",
-#      "mkdocstrings[python]>=0.26.1",
-#      "mypy>=0.991",
-#      "pre-commit>=2.20.0",
-#      "pytest-cov>=4.0.0",
-#      "ruff>=0.6.9",
-#      "tox-uv>=1.11.3",
-#  ]
-[tool.uv]
+#  [project.scripts]
+#  troloadbank = "troloadbank"
+
+#########################################
 
 [build-system]
-requires = ["setuptools >= 61.0"]
+requires = ["setuptools >= 61.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
-#  [dependency-groups]
-#  dev = [
-#      "autoflake>=2.3.1",
-#      "config>=0.5.1",
-#      "deptry>=0.20.0",
-#      "mkdocs>=1.6.1",
-#      "pytest>=8.3.3",
-#  ]
-#  app = [
-#      "openpyxl>=3.1.5",
-#  ]
+#########################################
 
 [tool.mypy]
+
 files = ["src"]
+
+check_untyped_defs = "False"
+disable_error_code = ["import-untyped"]
 disallow_any_unimported = "False"
+disallow_untyped_defs = "False"
+ignore_missing_imports = "False"
 no_implicit_optional = "True"
-check_untyped_defs = "True"
+show_error_codes = "True"
 warn_return_any = "True"
 warn_unused_ignores = "True"
-show_error_codes = "True"
-ignore_missing_imports = "True"
-disallow_untyped_defs = "False"
+
+#########################################
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+#########################################
 
 [tool.ruff]
 target-version = "py39"
@@ -113,6 +107,8 @@ ignore = [
     "TRY003",
 ]
 
+#########################################
+
 [tool.coverage.report]
 skip_empty = true
 
@@ -120,5 +116,9 @@ skip_empty = true
 branch = true
 source = ["troloadtrans"]
 
+#########################################
+
 [tool.deptry]
 ignore = ["DEP001"]
+
+#########################################

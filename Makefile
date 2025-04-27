@@ -4,6 +4,8 @@
 #
 ################################################################################
 
+include .env
+
 environment := 'devl'
 app_name := 'troloadbank'
 app_version := 'feature_v2.0.0'
@@ -12,8 +14,9 @@ trans_type := 'bank'  #  'bank', 'invest', 'prop'
 .PHONY: dr-build
 dr-build: ## Build our Docker container
 	@echo "🚀  Building our docker image..."
+	# cp /Users/jeff/devl/jasmit_com/firestarter/dist/jasmit* ./wheels
 	@export DOCKER_BUILDKIT=1
-	docker image build -t jasmit/troloadbank:$(app_version) -f Dockerfile .
+	docker image build --no-cache -t jasmit/$(app_name):$(app_version) -f Dockerfile .
 	# @echo "🚀  Running docker scout quickview..."
 	# @docker scout quickview
 	#  @echo "🚀  Running docker scout cves..."
@@ -62,8 +65,8 @@ test: ## Test the code with pytest
 	@echo "🚀 Testing code: Running pytest"
 	@uv run python -m pytest --cov --cov-config=pyproject.toml --cov-report=xml
 
-.PHONY: build
-build: clean-build ## Build wheel file
+.PHONY: build-wheel
+build-wheel: clean-build ## Build wheel file
 	@echo "🚀 Creating wheel file"
 	@uvx --from build pyproject-build --installer uv
 
@@ -115,8 +118,3 @@ help:
 	[[print(f'\033[36m{m[0]:<20}\033[0m {m[1]}') for m in re.findall(r'^([a-zA-Z_-]+):.*?## (.*)$$', open(makefile).read(), re.M)] for makefile in ('$(MAKEFILE_LIST)').strip().split()]"
 
 .DEFAULT_GOAL := help
-#
-# docker container run --rm -ti 2a236efc3f06 /bin/bash
-#
-
-

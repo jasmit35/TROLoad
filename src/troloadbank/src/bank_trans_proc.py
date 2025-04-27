@@ -6,6 +6,7 @@ transactions from an Excel spreadsheet.
 """
 
 import pandas as pd
+
 from accounts import AccountsTable
 from categories_table import CategoriesTable
 from std_logging import function_logger, getLogger
@@ -115,12 +116,12 @@ class TransactionsProcessor:
 
     # ----------------------------------------------------------------------
     @function_logger
-    def extract_date_range(self):
+    def extract_date_range(self) -> tuple[str, str]:
         df = pd.read_excel(self._file_path, engine="openpyxl")
         date_header = df.iloc[1, 0]
-        date_header = date_header.split()
-        start_date = date_header[3]
-        end_date = date_header[5]
+        date_header_split = date_header.split()
+        start_date = date_header_split[3]
+        end_date = date_header_split[5]
         return start_date, end_date
 
     #  ----------------------------------------------------------------------

@@ -1,29 +1,23 @@
 """
-loadback Import quicken banking transactions into the database.
+troloadbank - Import quicken banking transactions into the tro database.
 """
 
-import os
-import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from traceback import print_exc
 
+from std_app import StdApp
+from std_dbconn import get_database_connection  # type: ignore
+from std_logging import function_logger
+from std_report import StdReport
 from transactions_processor import TransactionsProcessor
-
-from .__init__ import get_version
-
-shared_code_path = os.path.expanduser("~/devl/Firestarter/shared_modules")
-sys.path.insert(1, shared_code_path)
-from firestarter import StdApp, function_logger, get_database_connection, StdReport  # type: ignore
 
 
 #  =============================================================================
-class TroLoadApp(StdApp):
+class TroLoadBank(StdApp):
     #  -----------------------------------------------------------------------------
-    def __init__(self, app_name, version):
-        super().__init__(app_name, version)
-        #  self._logger = getLogger()
-
+    def __init__(self):
+        super().__init__("TROLoadBank", "3.14")
         self._max_return_code = 0
 
         environment = self.cmdline_params.get("environment")
@@ -32,8 +26,11 @@ class TroLoadApp(StdApp):
 
         self._db_conn = get_database_connection(environment)
 
-        self.output_report = StdReport("TROLoadTrans", get_version(), rpt_file_path="reports/TROLoadTrans.rpt")
+        self.output_report = StdReport(
+            "TRO Load Banking Transactions", self._version, rpt_file_path="reports/TROLoadBank.rpt"
+        )
         self.output_report.print_header()
+        return
 
     # ---------------------------------------------------------------------------------------------------------------------
     def __str__(self):
@@ -48,7 +45,7 @@ class TroLoadApp(StdApp):
     #  -----------------------------------------------------------------------------
     @function_logger
     def set_cmdline_params(self):
-        parser = ArgumentParser(description="TROLoadTrans")
+        parser = ArgumentParser(description="TROLoadBank")
         parser.add_argument(
             "-e",
             "--environment",
@@ -59,7 +56,7 @@ class TroLoadApp(StdApp):
             "-c",
             "--cfgfile",
             required=False,
-            default="etc/troload.cfg",
+            default="etc/troloadbank.cfg",
             help="Name of the configuration file to use",
         )
         args = parser.parse_args()
@@ -120,7 +117,7 @@ class TroLoadApp(StdApp):
 #  =============================================================================
 if __name__ == "__main__":
     try:
-        this_app = TroLoadApp("TROLoadTrans", get_version())
+        this_app = TroLoadBank()
         this_app.process_all_files()
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")
