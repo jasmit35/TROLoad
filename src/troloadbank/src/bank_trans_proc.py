@@ -10,7 +10,7 @@ import pandas as pd
 from accounts import AccountsTable
 from categories_table import CategoriesTable
 from std_logging import function_logger, getLogger
-from transactions import Transaction, TransactionsTable
+from bank_trans import Transaction, TransactionsTable
 
 
 # ======================================================================
@@ -47,10 +47,11 @@ class TransactionsProcessor:
         Process the transactions in the Excel file.
         """
         #  First we need to determine the date range the transactions are for.
-        start_date, end_date = self.extract_date_range()
-
+        # start_date, end_date = self.extract_date_range()
+        start_date = self.cmdline_params.get("start_date")
+        finish_date = self.cmdline_params.get("finish_date")
         #  Delete the existing transactions for this date range.
-        self._transactions_table.mark_tranactions_obsolete(start_date, end_date)
+        self._transactions_table.mark_tranactions_obsolete(start_date, finish_date)
 
         #  Load data into dataframe and use pandas to clean it up for processing
         df = pd.read_excel(self._file_path, engine="openpyxl", header=4)

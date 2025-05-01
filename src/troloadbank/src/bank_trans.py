@@ -3,15 +3,7 @@ transactions
 """
 
 import datetime
-import os
-import sys
 from dataclasses import dataclass
-
-code_path = os.path.abspath("../tro/python")
-sys.path.append(code_path)
-
-code_path = os.path.abspath("../local/python")
-sys.path.append(code_path)
 
 
 class InvalidTransactionException(Exception):
@@ -133,6 +125,7 @@ class TransactionsTable:
         DELETE FROM tro.transactions
         WHERE transaction_date >= %s
         AND transaction_date <= %s
+        AND DATA_SOURCE = '1'
         """
         with self.db_conn.cursor() as cursor:
             cursor.execute(sql, (start_date, end_date))

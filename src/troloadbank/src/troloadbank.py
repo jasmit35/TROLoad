@@ -10,7 +10,7 @@ from std_app import StdApp
 from std_dbconn import get_database_connection  # type: ignore
 from std_logging import function_logger
 from std_report import StdReport
-from transactions_processor import TransactionsProcessor
+from bank_trans_proc import TransactionsProcessor
 
 
 #  =============================================================================
@@ -51,6 +51,18 @@ class TroLoadBank(StdApp):
             "--environment",
             required=True,
             help="Environment - devl, test or prod",
+        )
+        parser.add_argument(
+            "-s",
+            "--start_date",
+            required=True,
+            help="Date of the earliest transaction.",
+           )
+        parser.add_argument(
+            "-f",
+            "--finish_date",
+            required=True,
+            help="Date of the last transaction.",
         )
         parser.add_argument(
             "-c",
