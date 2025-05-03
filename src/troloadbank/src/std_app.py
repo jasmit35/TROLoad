@@ -16,7 +16,7 @@ class StdApp:
         self._logger.info(f"Begin 'StdApp.__init__         ' arguments - ({app_name=}, {version=})")
 
         self._app_name = app_name
-        self._version = version
+        #  self.__version__ = version
 
         self.cmdline_params = self.set_cmdline_params()
         self.cfg_file_params = self.set_cfg_file_params()

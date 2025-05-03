@@ -17,7 +17,8 @@ from std_report import StdReport
 class TroLoadBank(StdApp):
     #  -----------------------------------------------------------------------------
     def __init__(self):
-        super().__init__("TROLoadBank", "3.14")
+        super().__init__("TROLoadBank")
+        self.__version__ = "feature/v2.0.1"
         self._max_return_code = 0
 
         environment = self.cmdline_params.get("environment")
@@ -27,7 +28,7 @@ class TroLoadBank(StdApp):
         self._db_conn = get_database_connection(environment)
 
         self.output_report = StdReport(
-            "TRO Load Banking Transactions", self._version, rpt_file_path="reports/TROLoadBank.rpt"
+            "TRO Load Banking Transactions", self.__version__, rpt_file_path="reports/TROLoadBank.rpt"
         )
         self.output_report.print_header()
         return

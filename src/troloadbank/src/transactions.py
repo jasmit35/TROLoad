@@ -120,17 +120,6 @@ class TransactionsTable:
     #     with self.db_conn.cursor() as cursor:
     #         cursor.execute(sql, (todays_date, start_date, end_date))
 
-    def mark_tranactions_obsolete(self, start_date, end_date):
-        sql = """
-        DELETE FROM tro.transactions
-        WHERE transaction_date >= %s
-        AND transaction_date <= %s
-        AND DATA_SOURCE = 'quicken'
-        """
-        with self.db_conn.cursor() as cursor:
-            cursor.execute(sql, (start_date, end_date))
-            return cursor.rowcount
-
     #   -----------------------------------------------------------------------------
     def get_transaction_id(self, account_id, transaction_date, category_id, amount):
         sql = """

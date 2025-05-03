@@ -42,31 +42,34 @@ class BankTransactionsProcessor:
 
     # ----------------------------------------------------------------------
     @function_logger
-    def process_one_file(self, start_date, finish_date):
+    def process_file(self):
         """
         Process the transactions in the Excel file.
         """
         #  First we need to determine the date range the transactions are for.
-        use_start_date, use_end_date = self.extract_date_range()
-        if start_date is not None:
-            use_start_date = start_date
-        if finish_date is not None:
-            end_date = finish_date
+        start_date, end_date = self.extract_date_range()
+        #  if start_date is not None:
+        #      use_start_date = start_date
+        #  if finish_date is not None:
+        #      end_date = finish_date
         #  Delete the existing transactions for this date range.
-        self._transactions_table.mark_tranactions_obsolete(use_start_date, end_date)
+        self.delete_obsolete_tranactions(start_date, end_date)
 
-        #  Load data into dataframe and use pandas to clean it up for processing
+        #  Load data into dataframe and use pandas to clean it up for processingA
+        pd.set_option('future.no_silent_downcasting', True)
         df = pd.read_excel(self._file_path, engine="openpyxl", header=4)
         #  Remove spaces in the column names
         df.columns = df.columns.str.replace(" ", "")
         # Drop rows that are all NaN
         df = df.dropna(axis=0, how="all")
         df = df.dropna(axis=1, how="all")  # Drop columns that are all NaN
-        df = df.iloc[:-5]  # Drop the last 5 rows
+        df = df.iloc[:-4]  # Drop the last 4 rows
 
         # Fill in NaN values with the previous value for the listed columns
         cols = ["Date", "Account"]
         df.loc[:, cols] = df.loc[:, cols].ffill()
+        #  df.loc[:,cols] =  df.result.infer_objects(copy=False)
+        #  df.loc[:,cols].infer_objects(copy=True)
 
         #  Replace NaN with 'U' in the Clr column
         cols = ["Clr"]
@@ -123,8 +126,8 @@ class BankTransactionsProcessor:
         df = pd.read_excel(self._file_path, engine="openpyxl")
         date_header = df.iloc[1, 0]
         date_header_split = date_header.split()
-        start_date = date_header_split[0]
-        end_date = date_header_split[2]
+        start_date = date_header_split[3]
+        end_date = date_header_split[5]
         return start_date, end_date
 
     #  ----------------------------------------------------------------------
@@ -142,6 +145,17 @@ class BankTransactionsProcessor:
             return "Sold"
 
         return "Unknown"
+
+    def delete_obsolete_tranactions(self, start_date, end_date):
+        sql = """
+        DELETE FROM tro.transactions
+        WHERE transaction_date >= %s
+        AND transaction_date <= %s
+        AND DATA_SOURCE = 'quicken'
+        """
+        with self._db_conn.cursor() as cursor:
+            cursor.execute(sql, (start_date, end_date))
+            return cursor.rowcount
 
     # #  ----------------------------------------------------------------------
     # @function_logger
