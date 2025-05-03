@@ -6,11 +6,11 @@ from argparse import ArgumentParser
 from pathlib import Path
 from traceback import print_exc
 
+from bank_transactions_processor import BankTransactionsProcessor
 from std_app import StdApp
 from std_dbconn import get_database_connection  # type: ignore
 from std_logging import function_logger
 from std_report import StdReport
-from bank_trans_proc import TransactionsProcessor
 
 
 #  =============================================================================
@@ -55,13 +55,13 @@ class TroLoadBank(StdApp):
         parser.add_argument(
             "-s",
             "--start_date",
-            required=True,
+            required=False,
             help="Date of the earliest transaction.",
            )
         parser.add_argument(
             "-f",
             "--finish_date",
-            required=True,
+            required=False,
             help="Date of the last transaction.",
         )
         parser.add_argument(
@@ -77,18 +77,25 @@ class TroLoadBank(StdApp):
     #  -----------------------------------------------------------------------------
     #  Process the
     @function_logger
-    def process_all_files(self):
+    def process_stagged_files(self):
         stage_dir = self.cfg_file_params.get("stage_dir", "stage")
         stage_dir_path = Path(stage_dir)
         self.report(f"processing files in {stage_dir_path}\n")
 
         for stage_file in stage_dir_path.iterdir():
             if stage_file.suffix != ".xlsx":
+                self.report(f"  ignoring file {stage_file}\n")
+                continue
+            if stage_file.name[:4] != "bank":
+                self.report(f"  ignoring file {stage_file}\n")
                 continue
             self.report(f"  processing file {stage_file}\n")
 
-            trans_processor = TransactionsProcessor(self._db_conn, self.output_report, stage_file)
-            rc = trans_processor.process_one_file()
+            bank_trans_processor = BankTransactionsProcessor(self._db_conn, self.output_report, stage_file)
+            #  start_date = self.cmdline_params.get("start_date")
+            #  finish_date = self.cmdline_params.get("finish_date")
+            #  rc = trans_processor.process_one_file(start_date, finish_date)
+            rc = bank_trans_processor.process_file()
             if int(rc) > self._max_return_code:
                 self._max_return_code = rc
 
@@ -99,38 +106,11 @@ class TroLoadBank(StdApp):
 
         return self._max_return_code
 
-
-"""    #  -----------------------------------------------------------------------------
-     @function_logger
-    def process_excel_file(self, file_path):
-        self.report(f"  processing file {file_path}\n")
-
-        tran_tab = TransactionsTable(self._db_conn)
-        excel_workbook = TransactionsExcelProcessor(self, file_path)
-
-        rc = 0
-        start_date, end_date = excel_workbook.get_transaction_date_range()
-        self.report(f"    Transactions start date - {start_date}, end date - {end_date}\n")
-
-        row_count = tran_tab.mark_tranactions_obsolete(start_date, end_date)
-        if row_count > 0:
-            self.report(f"    {row_count} existing rows in that date range were deleted.")
-
-        excel_workbook.load_new_accounts_from_workbook()
-        # excel_workbook.load_new_categories_from_workbook()
-        rc = excel_workbook.load_transactions_from_workbook()
-
-        new_file_path = f"{file_path}.bkp"
-        file_path.rename(new_file_path)
-
-        return rc
- """
-
 #  =============================================================================
 if __name__ == "__main__":
     try:
         this_app = TroLoadBank()
-        this_app.process_all_files()
+        this_app.process_stagged_files()
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")
         print_exc()

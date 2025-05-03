@@ -10,11 +10,11 @@ import pandas as pd
 from accounts import AccountsTable
 from categories_table import CategoriesTable
 from std_logging import function_logger, getLogger
-from bank_trans import Transaction, TransactionsTable
+from transactions import Transaction, TransactionsTable
 
 
 # ======================================================================
-class TransactionsProcessor:
+class BankTransactionsProcessor:
     def __init__(self, db_conn, report, file_path):
         self._logger = getLogger()
         self._logger.info(f"Begin 'TransactionsProcessor.__init__({file_path=})")
@@ -42,16 +42,18 @@ class TransactionsProcessor:
 
     # ----------------------------------------------------------------------
     @function_logger
-    def process_one_file(self):
+    def process_one_file(self, start_date, finish_date):
         """
         Process the transactions in the Excel file.
         """
         #  First we need to determine the date range the transactions are for.
-        # start_date, end_date = self.extract_date_range()
-        start_date = self.cmdline_params.get("start_date")
-        finish_date = self.cmdline_params.get("finish_date")
+        use_start_date, use_end_date = self.extract_date_range()
+        if start_date is not None:
+            use_start_date = start_date
+        if finish_date is not None:
+            end_date = finish_date
         #  Delete the existing transactions for this date range.
-        self._transactions_table.mark_tranactions_obsolete(start_date, finish_date)
+        self._transactions_table.mark_tranactions_obsolete(use_start_date, end_date)
 
         #  Load data into dataframe and use pandas to clean it up for processing
         df = pd.read_excel(self._file_path, engine="openpyxl", header=4)
@@ -121,8 +123,8 @@ class TransactionsProcessor:
         df = pd.read_excel(self._file_path, engine="openpyxl")
         date_header = df.iloc[1, 0]
         date_header_split = date_header.split()
-        start_date = date_header_split[3]
-        end_date = date_header_split[5]
+        start_date = date_header_split[0]
+        end_date = date_header_split[2]
         return start_date, end_date
 
     #  ----------------------------------------------------------------------

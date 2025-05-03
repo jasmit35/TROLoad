@@ -2,7 +2,7 @@
 
 [project]
 name = "TROLoadBank"
-version = "0.0.2"
+dynamic = ["version"]
 description = "Load banking transaction data from Quicken into the TRO database."
 authors = [{ name = "jasmit", email = "jasmit@swbell.net" }]
 readme = "README.md"
@@ -27,6 +27,10 @@ Documentation = "https://jasmit.github.io/TROLoad/"
 [build-system]
 requires = ["setuptools >= 61.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = { attribute = "troloadtrans.__version__", write_to = "src/troloadtrans/__version__.py" }
+
 
 #########################################
 

@@ -35,8 +35,8 @@ class TransactionsTable:
     def insert_transaction(self, trans) -> None:
         sql = """
             insert into tro.transactions
-            (account_fk, transaction_date, category_fk, amount, cleared, number, tag, description, memo, tax_item)
-            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (account_fk, transaction_date, category_fk, amount, cleared, number, tag, description, memo, tax_item, data_source)
+            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'quicken')
         """
         with self.db_conn.cursor() as cursor:
             cursor.execute(
@@ -125,7 +125,7 @@ class TransactionsTable:
         DELETE FROM tro.transactions
         WHERE transaction_date >= %s
         AND transaction_date <= %s
-        AND DATA_SOURCE = '1'
+        AND DATA_SOURCE = 'quicken'
         """
         with self.db_conn.cursor() as cursor:
             cursor.execute(sql, (start_date, end_date))
