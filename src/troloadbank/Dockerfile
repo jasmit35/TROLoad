@@ -9,7 +9,6 @@ ENV APP_HOME="/opt/app/troloadbank"
 
 WORKDIR $APP_HOME
 COPY ./pyproject.toml ./uv.lock . 
-# COPY ./src/troloadbank/wheels/ $APP_HOME/wheels/ 
 
 RUN uv sync --locked
 
@@ -38,14 +37,12 @@ COPY --chown=appuser:appgroup --from=builder $VIRTUAL_ENV/ $VIRTUAL_ENV/
 
 ##  Copy the application code to our image
 COPY --chown=appuser:appgroup src/ $APP_HOME/src
-# COPY --chown=appuser:appgroup wheels/ $APP_HOME/wheels
+COPY --chown=appuser:appgroup etc/ $APP_HOME/etc
 
 ##  Run it
 USER appuser
 WORKDIR $APP_HOME
 
 #  CMD ["/bin/bash"]
-#  ENTRYPOINT [ "python", "/src/troloadbank.py" ]
-#  CMD ["-e", "devl"]
 ENTRYPOINT [ "uv", "run", "src/troloadbank.py" ]
 CMD ["-e", "devl"]

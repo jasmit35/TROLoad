@@ -6,10 +6,10 @@ from argparse import ArgumentParser
 from pathlib import Path
 from traceback import print_exc
 
+from jasmit_firestarter import StdApp, function_logger
+
 from bank_transactions_processor import BankTransactionsProcessor
-from std_app import StdApp
-from std_dbconn import get_database_connection  # type: ignore
-from std_logging import function_logger
+from std_dbconn import get_database_connection
 from std_report import StdReport
 
 
@@ -58,7 +58,7 @@ class TroLoadBank(StdApp):
             "--start_date",
             required=False,
             help="Date of the earliest transaction.",
-           )
+        )
         parser.add_argument(
             "-f",
             "--finish_date",
@@ -106,6 +106,7 @@ class TroLoadBank(StdApp):
         self.output_report.print_footer(self._max_return_code)
 
         return self._max_return_code
+
 
 #  =============================================================================
 if __name__ == "__main__":

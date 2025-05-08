@@ -4,7 +4,7 @@ std_dbconn
 
 from configparser import ConfigParser
 
-from psycopg2 import OperationalError, connect
+from psycopg import OperationalError, connect
 
 
 def get_database_connection(environment):

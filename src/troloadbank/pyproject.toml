@@ -9,9 +9,10 @@ readme = "README.md"
 keywords = ['python', 'pandas', 'quicken', 'postgres']
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "jasmit-firestarter>=0.2.0",
     "openpyxl>=3.1.5",
     "pandas>=2.2.3",
-    "psycopg2-binary>=2.9.10",
+    "psycopg>=3.2.7",
 ]
 
 [project.urls]
@@ -49,6 +50,9 @@ show_error_codes = "True"
 warn_return_any = "True"
 warn_unused_ignores = "True"
 
+[[tool.mypy.overrides]]
+module = ["jasmit_firestarter.*"]
+follow_untyped_imports = true
 #########################################
 
 [tool.pytest.ini_options]

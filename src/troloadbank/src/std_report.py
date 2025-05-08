@@ -5,7 +5,7 @@ std_report.py
 import datetime
 from logging import getLogger
 
-from std_logging import function_logger
+from jasmit_firestarter import function_logger
 
 
 class StdReport:

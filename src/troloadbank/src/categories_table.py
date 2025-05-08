@@ -19,7 +19,7 @@ Methods:
 from logging import getLogger
 
 from category_data import CategoryData
-from std_logging import function_logger
+from jasmit_firestarter import function_logger
 
 
 class CategoriesTable:

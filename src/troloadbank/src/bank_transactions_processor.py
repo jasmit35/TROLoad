@@ -5,11 +5,13 @@ This module provides the TransactionsProcessor class for processing
 transactions from an Excel spreadsheet.
 """
 
+from logging import getLogger
+
 import pandas as pd
+from jasmit_firestarter import function_logger
 
 from accounts import AccountsTable
 from categories_table import CategoriesTable
-from std_logging import function_logger, getLogger
 from transactions import Transaction, TransactionsTable
 
 
@@ -56,7 +58,7 @@ class BankTransactionsProcessor:
         self.delete_obsolete_tranactions(start_date, end_date)
 
         #  Load data into dataframe and use pandas to clean it up for processingA
-        pd.set_option('future.no_silent_downcasting', True)
+        pd.set_option("future.no_silent_downcasting", True)
         df = pd.read_excel(self._file_path, engine="openpyxl", header=4)
         #  Remove spaces in the column names
         df.columns = df.columns.str.replace(" ", "")
