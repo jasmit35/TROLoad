@@ -2,8 +2,6 @@
 accounts
 """
 
-import os
-import sys
 from dataclasses import dataclass
 
 #  code_path = os.path.abspath("../tro/python")

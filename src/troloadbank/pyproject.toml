@@ -7,12 +7,12 @@ description = "Load banking transaction data from Quicken into the TRO database.
 authors = [{ name = "jasmit", email = "jasmit@swbell.net" }]
 readme = "README.md"
 keywords = ['python', 'pandas', 'quicken', 'postgres']
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
     "jasmit-firestarter>=0.2.0",
     "openpyxl>=3.1.5",
     "pandas>=2.2.3",
-    "psycopg>=3.2.7",
+    "psycopg[binary]>=3.2.7",
 ]
 
 [project.urls]
@@ -26,7 +26,7 @@ Documentation = "https://jasmit.github.io/TROLoad/"
 #########################################
 
 [build-system]
-requires = ["setuptools >= 61.0", "setuptools-scm"]
+requires = ["setuptools >= 77.0.3", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 #  [tool.setuptools.dynamic]
@@ -39,8 +39,8 @@ build-backend = "setuptools.build_meta"
 [tool.mypy]
 
 files = ["src"]
+check_untyped_defs = "True"
 
-check_untyped_defs = "False"
 disable_error_code = ["import-untyped"]
 disallow_any_unimported = "False"
 disallow_untyped_defs = "False"
@@ -53,6 +53,7 @@ warn_unused_ignores = "True"
 [[tool.mypy.overrides]]
 module = ["jasmit_firestarter.*"]
 follow_untyped_imports = true
+
 #########################################
 
 [tool.pytest.ini_options]

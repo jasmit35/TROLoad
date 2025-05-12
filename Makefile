@@ -1,41 +1,36 @@
 ################################################################################
-#
-#  Docker stuff
-#
-################################################################################
-
-include .env
-
-environment := 'devl'
-app_name := 'troloadbank'
-app_version := 'feature_v2.0.0'
+#  Setup 
+include env
 trans_type := 'bank'  #  'bank', 'invest', 'prop'
 
-.PHONY: dr-build
-dr-build: ## Build our Docker container
+#-------------------------------------------------------------------------------
+#  Docker stuff
+
+.PHONY: docker-build
+docker-build: ## Build the Docker image
 	@echo "🚀  Building our docker image..."
-	# cp /Users/jeff/devl/jasmit_com/firestarter/dist/jasmit* ./wheels
 	@export DOCKER_BUILDKIT=1
-	docker image build --no-cache -t jasmit/$(app_name):$(app_version) -f Dockerfile .
-	# @echo "🚀  Running docker scout quickview..."
-	# @docker scout quickview
+	docker image build -t jasmit/$(app_name):$(app_version) .
+	#  @echo "🚀  Running docker scout quickview..."
+	#  @docker scout quickview
 	#  @echo "🚀  Running docker scout cves..."
 	#  @docker scout cves local://jasmit/troloadtrans:$(app_version)
 
-.PHONY: dr-run
-dr-run: ## Run this project's container
+.PHONY: docker-run
+docker-run: ## Run this project's container
 	- rm ./logs/*
 	- rm ./reports/*
-	- rm ./stage/*
-	- cp -R "/Volumes/SharedSpace/TROStage/devl/$(trans_type)*.xlsx" ./stage/
 	@echo "🚀  Running the container..."
-	@docker container run -it --rm \
+	@docker container run -it \
 		--mount type=bind,source=./logs,target=/opt/app/$(app_name)/logs \
 		--mount type=bind,source=./reports,target=/opt/app/$(app_name)/reports \
-		--mount type=bind,source=./stage,target=/opt/app/$(app_name)/stage \
+		-v /Volumes/nfsstorage:/opt/app/$(app_name)/stage \
 		jasmit/$(app_name):$(app_version)
 
+		# -v nfsstorage:/opt/app/$(app_name)/stage \
+		# -v nfsstorage:/opt/app/$(app_name)/stage -o "addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=4" \
 		# jasmit/$(app_name):$(app_version) -e $(environment) 
+	    # cp -R "/Volumes/SharedSpace/TROStage/devl/$(trans_type)*.xlsx" ./stage/
 
 .PHONY: dr-bash
 dr-bash:
@@ -114,7 +109,7 @@ dr-push-image:
 
 .PHONY: help
 help:
-	@uv run python -c "import re; \
+	@uv run --no-sync python -c "import re; \
 	[[print(f'\033[36m{m[0]:<20}\033[0m {m[1]}') for m in re.findall(r'^([a-zA-Z_-]+):.*?## (.*)$$', open(makefile).read(), re.M)] for makefile in ('$(MAKEFILE_LIST)').strip().split()]"
 
 .DEFAULT_GOAL := help

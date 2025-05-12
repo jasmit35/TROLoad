@@ -1,0 +1,7 @@
+## This file is used to set environment variables for the Makefile
+## It is sourced by the Makefile
+
+environment = 'devl'
+
+app_name = "troloadbank"
+app_version = '0.1.0'
