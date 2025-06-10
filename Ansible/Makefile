@@ -34,14 +34,14 @@ ansible-lint:
 		printf "      ansible linting successful!\n"; \
 	fi
 
-#==========================================================================================
+#------------------------------------------------------------------------------------------
 
 check: yaml-lint syntax-check ansible-lint
 
-run: 
-	ansible-playbook ${PLAYBOOK}
+run-in-test:
+	ansible-playbook -i inventory/hosts_test_swarm --ask-become-pass ${PLAYBOOK}
 
-run-be: 
-	ansible-playbook --ask-become-pass ${PLAYBOOK}
+run-in-prod:
+	ansible-playbook -i inventory/hosts_prod_swarm --ask-become-pass ${PLAYBOOK}
 
 

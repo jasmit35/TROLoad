@@ -24,9 +24,10 @@ docker-run: ## Run this project's container
 	@docker container run -it \
 		--mount type=bind,source=./logs,target=/opt/app/$(app_name)/logs \
 		--mount type=bind,source=./reports,target=/opt/app/$(app_name)/reports \
-		-v /Volumes/nfsstorage:/opt/app/$(app_name)/stage \
+		-v /Volumes/nfsstorage:/mnt/nfsstorage \
 		jasmit/$(app_name):$(app_version)
 
+		# -v /Volumes/nfsstorage:/opt/app/$(app_name)/stage \  # This works!
 		# -v nfsstorage:/opt/app/$(app_name)/stage \
 		# -v nfsstorage:/opt/app/$(app_name)/stage -o "addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=4" \
 		# jasmit/$(app_name):$(app_version) -e $(environment) 
