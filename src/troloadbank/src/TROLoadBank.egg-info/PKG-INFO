@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: TROLoadBank
+Version: 2.0.1
+Summary: Load banking transaction data from Quicken into the TRO database.
+Author-email: jasmit <jasmit@swbell.net>
+Project-URL: Homepage, https://jasmit.github.io/TROLoad/
+Project-URL: Repository, https://github.com/jasmit/TROLoad
+Project-URL: Documentation, https://jasmit.github.io/TROLoad/
+Keywords: python,pandas,quicken,postgres
+Requires-Python: <3.14,>=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: jasmit-firestarter>=0.2.0
+Requires-Dist: openpyxl>=3.1.5
+Requires-Dist: pandas>=2.2.3
+Requires-Dist: psycopg[binary]>=3.2.7
