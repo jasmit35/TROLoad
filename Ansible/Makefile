@@ -38,10 +38,13 @@ ansible-lint:
 
 check: yaml-lint syntax-check ansible-lint
 
+run-in-devl:
+	ansible-playbook -i inventory/devl_swarm.yaml --ask-become-pass ${PLAYBOOK}
+
 run-in-test:
-	ansible-playbook -i inventory/hosts_test_swarm --ask-become-pass ${PLAYBOOK}
+	ansible-playbook -i inventory/test_swarm.yaml --ask-become-pass ${PLAYBOOK}
 
 run-in-prod:
-	ansible-playbook -i inventory/hosts_prod_swarm --ask-become-pass ${PLAYBOOK}
+	ansible-playbook -i inventory/prod_swarm.yaml --ask-become-pass ${PLAYBOOK}
 
 

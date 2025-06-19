@@ -1,7 +1,7 @@
 ---
 
 - name: Deploy the TROLoadBank application
-  hosts: manager-1
+  hosts: devl-manager-1
   become: true
   gather_facts: true
 
