@@ -32,7 +32,9 @@ class TroLoadApp(StdApp):
 
         self._db_conn = get_database_connection(environment)
 
-        self.output_report = StdReport("TROLoadTrans", Version, rpt_file_path="reports/TROLoadTrans.rpt")
+        self.output_report = StdReport(
+            "TROLoadTrans", Version, rpt_file_path="reports/TROLoadTrans.rpt"
+        )
         self.output_report.print_header()
 
     # ---------------------------------------------------------------------------------------------------------------------
@@ -78,7 +80,9 @@ class TroLoadApp(StdApp):
                 continue
             self.report(f"  processing file {stage_file}\n")
 
-            trans_processor = TransactionsProcessor(self._db_conn, self.output_report, stage_file)
+            trans_processor = TransactionsProcessor(
+                self._db_conn, self.output_report, stage_file
+            )
             rc = trans_processor.process_one_file()
             if int(rc) > self._max_return_code:
                 self._max_return_code = rc

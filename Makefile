@@ -1,5 +1,5 @@
 ################################################################################
-#  Setup 
+#  Setup
 include env
 trans_type := 'bank'  #  'bank', 'invest', 'prop'
 
@@ -14,24 +14,25 @@ docker-build: ## Build the Docker image
 	#  @echo "🚀  Running docker scout quickview..."
 	#  @docker scout quickview
 	#  @echo "🚀  Running docker scout cves..."
-	#  @docker scout cves local://jasmit/troloadtrans:$(app_version)
+	#  @docker scout cves local://jasmit/${app_name}:$(app_version)
 
 .PHONY: docker-run
 docker-run: ## Run this project's container
-	- rm ./logs/*
-	- rm ./reports/*
 	@echo "🚀  Running the container..."
-	@docker container run -it \
-		--mount type=bind,source=./logs,target=/opt/app/$(app_name)/logs \
-		--mount type=bind,source=./reports,target=/opt/app/$(app_name)/reports \
-		-v /Volumes/nfsstorage:/mnt/nfsstorage \
-		jasmit/$(app_name):$(app_version)
+	@docker run -d \
+		--mount type=bind,source=$(app_nfs_home)/logs,target=$(app_home)/logs \
+		--mount type=bind,source=$(app_nfs_home)/reports,target=$(app_home)/reports \
+		--mount type=bind,source=$(app_nfs_home)/stage,target=$(app_home)/stage \
+		jasmit/$(app_name):$(app_version) -e $(environment)
 
-		# -v /Volumes/nfsstorage:/opt/app/$(app_name)/stage \  # This works!
-		# -v nfsstorage:/opt/app/$(app_name)/stage \
-		# -v nfsstorage:/opt/app/$(app_name)/stage -o "addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=4" \
-		# jasmit/$(app_name):$(app_version) -e $(environment) 
-	    # cp -R "/Volumes/SharedSpace/TROStage/devl/$(trans_type)*.xlsx" ./stage/
+.PHONY: docker-test
+docker-run: ## Run this project's container
+	@echo "🚀  Running the container..."
+	@docker run --pull always -it \
+		--mount type=bind,source=$(app_nfs_home)/logs,target=$(app_home)/logs \
+		--mount type=bind,source=$(app_nfs_home)/reports,target=$(app_home)/reports \
+		--mount type=bind,source=$(app_nfs_home)/stage,target=$(app_home)/stage \
+		jasmit/$(app_name):$(app_version)
 
 .PHONY: dr-bash
 dr-bash:

@@ -4,11 +4,12 @@ troloadbank - Import quicken banking transactions into the tro database.
 
 from argparse import ArgumentParser
 from pathlib import Path
+from time import sleep
 from traceback import print_exc
 
-from jasmit_firestarter import StdApp, function_logger
-
 from bank_transactions_processor import BankTransactionsProcessor
+from jasmit_firestarter import StdApp, function_logger
+from schedule import every, run_pending
 from std_dbconn import get_database_connection
 from std_report import StdReport
 
@@ -28,9 +29,10 @@ class TroLoadBank(StdApp):
         self._db_conn = get_database_connection(environment)
 
         self.output_report = StdReport(
-            "TRO Load Banking Transactions", self.__version__, rpt_file_path="reports/TROLoadBank.rpt"
+            "TRO Load Banking Transactions",
+            self.__version__,
+            rpt_file_path="reports/TROLoadBank.rpt",
         )
-        self.output_report.print_header()
         return
 
     # ---------------------------------------------------------------------------------------------------------------------
@@ -79,8 +81,10 @@ class TroLoadBank(StdApp):
     #  Process the
     @function_logger
     def process_stagged_files(self):
-        stage_dir = self.cfg_file_params.get("stage_dir", "stage")
+        stage_dir = self.cfg_file_params.get("stage_dir", "/opt/app/troloadbank/stage")
         stage_dir_path = Path(stage_dir)
+
+        self.output_report.print_header()
         self.report(f"processing files in {stage_dir_path}\n")
 
         for stage_file in stage_dir_path.iterdir():
@@ -112,7 +116,15 @@ class TroLoadBank(StdApp):
 if __name__ == "__main__":
     try:
         this_app = TroLoadBank()
-        this_app.process_stagged_files()
+
+        #  every 60 minutes check for and process any files
+        every(60).minutes.do(this_app.process_stagged_files)
+
+        #  for i in range(300):  # do the 5 minute loop 300 times (25 hours)
+        for i in range(60):  # do the 5 minute loop 300 times (25 hours)
+            run_pending()
+            sleep(300)  #  sleep for 5 minutes
+
     except Exception as e:
         print(f"Following uncaught exception occured. {e}")
         print_exc()

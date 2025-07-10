@@ -6,13 +6,10 @@ import os
 import sys
 from logging import getLogger
 
+from std_logging import function_logger
+
 code_path = os.path.abspath("../tro/python")
 sys.path.append(code_path)
-
-code_path = os.path.abspath("../local/python")
-sys.path.append(code_path)
-
-from std_logging import function_logger
 
 # tro_code_path = os.path.abspath("../tro/local/python")
 # sys.path.insert(1, tro_code_path)

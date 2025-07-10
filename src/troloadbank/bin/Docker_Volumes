@@ -1,0 +1,15 @@
+#/bin/bash
+
+docker volume rm nfs_volume
+
+docker volume create \
+  --driver local \
+  --opt type=nfs \
+  --opt o=addr=192.168.1.70,rw \
+  --opt device=:/volume4/NFSStorage \
+  nfs_volume
+
+docker inspect nfs_volume
+
+# sudo mount -t nfs -o vers=4,resvport,rw 192.168.1.70:/volume4/NFSStorage /Volumes/nfsstorage
+

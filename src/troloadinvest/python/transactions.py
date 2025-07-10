@@ -181,4 +181,6 @@ class TransactionsTable:
             where transaction_id = %s
         """
         with self.db_conn.cursor() as cursor:
-            cursor.execute(sql, (cleared, number, tag, description, memo, tax_item, transaction_id))
+            cursor.execute(
+                sql, (cleared, number, tag, description, memo, tax_item, transaction_id)
+            )

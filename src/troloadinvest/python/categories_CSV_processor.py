@@ -24,7 +24,9 @@ class CategoriesCSVProcessor:
     # ---------------------------------------------------------------------------------------------------------------------
     def __init__(self, db_conn, csv_file_path, report):
         self._logger = getLogger()
-        self._logger.info(f"Begin 'CategoriesCSVProcessor.__init__({db_conn=}, {csv_file_path=}, {report=})")
+        self._logger.info(
+            f"Begin 'CategoriesCSVProcessor.__init__({db_conn=}, {csv_file_path=}, {report=})"
+        )
 
         self._report = report
 
@@ -114,13 +116,22 @@ class CategoriesCSVProcessor:
             if existing_row[3] != category_data.category_group_fk:
                 apply_updates = True
 
-            if len(existing_row) > 4 and existing_row[4] != category_data.category_description:
+            if (
+                len(existing_row) > 4
+                and existing_row[4] != category_data.category_description
+            ):
                 apply_updates = True
 
-            if len(existing_row) > 5 and existing_row[5] != category_data.category_tax_line_item:
+            if (
+                len(existing_row) > 5
+                and existing_row[5] != category_data.category_tax_line_item
+            ):
                 apply_updates = True
 
-            if len(existing_row) > 6 and existing_row[6] != category_data.category_hidden:
+            if (
+                len(existing_row) > 6
+                and existing_row[6] != category_data.category_hidden
+            ):
                 apply_updates = True
 
             if apply_updates:
@@ -140,10 +151,16 @@ class CategoriesCSVProcessor:
         if leading_spaces > 0:
             parent_category_names = self._previous_category_name.split(":")
             if leading_spaces == 3:
-                new_category_name = parent_category_names[0] + ":" + new_category_name.lstrip()
+                new_category_name = (
+                    parent_category_names[0] + ":" + new_category_name.lstrip()
+                )
             if leading_spaces == 6:
                 new_category_name = (
-                    parent_category_names[0] + ":" + parent_category_names[1] + ":" + new_category_name.lstrip()
+                    parent_category_names[0]
+                    + ":"
+                    + parent_category_names[1]
+                    + ":"
+                    + new_category_name.lstrip()
                 )
             if leading_spaces == 9:
                 new_category_name = (
@@ -165,7 +182,9 @@ class CategoriesCSVProcessor:
     def get_category_type_fk(self, category_type):
         category_type_id = 0
         if category_type not in [None, ""]:
-            category_type_id = self._category_types_table.select_id_using_name(category_type)
+            category_type_id = self._category_types_table.select_id_using_name(
+                category_type
+            )
         if category_type_id is None:
             self.report(f"      Inserting new category type - {category_type}\n")
             category_type_id = self._category_types_table.insert(category_type)
@@ -176,7 +195,9 @@ class CategoriesCSVProcessor:
     def get_category_group_fk(self, category_group):
         category_group_id = 0
         if category_group not in [None, ""]:
-            category_group_id = self._category_groups_table.select_id_using_name(category_group)
+            category_group_id = self._category_groups_table.select_id_using_name(
+                category_group
+            )
             if category_group_id is None:
                 self.report(f"      Inserting new category group - {category_group}\n")
                 category_group_id = self._category_groups_table.insert(category_group)

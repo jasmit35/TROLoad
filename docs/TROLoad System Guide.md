@@ -1,5 +1,15 @@
 # TRO Load System Guide
 
+## Deploying a new release to Test
+
+Use the ansible playbook to ensure the docker NFS volume is available.
+
+```
+cd /Users/jeff/devl/ansible
+make PLAYBOOK=docker_nfs_volume_create HOSTS=localhost, run-on-hosts
+
+```
+
 ## Deploying a new release to Prod
 
 **If FireStarter has not been updated to specify a release, stage the desired release in the /tmp directory before running auto_update. Then be sure to select the option to use the existing tar file.**

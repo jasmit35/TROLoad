@@ -1,5 +1,4 @@
 ---
-
 - name: Deploy the TROLoadTrans application
   hosts: vagrant1
   gather_facts: true
@@ -11,14 +10,6 @@
     github_ssh_key: "{{ ansible_user_dir }}/.ssh/github_{{ ansible_hostname }}"
 
   tasks:
-
-    - name: Ensure the group 'appgroup' exist
-      become: true
-      ansible.builtin.group:
-        name: appgroup
-        state: present
-        gid: 10000
-
     - name: Ensure the user 'appowner' exist
       become: true
       ansible.builtin.user:
@@ -62,7 +53,7 @@
         state: directory
         group: appgroup
         owner: appowner
-        mode: '0750'
+        mode: "0750"
       loop:
         - "{{ app_home }}"
         - "{{ app_home }}/logs"
@@ -74,5 +65,3 @@
         repo: https://github.com/jasmit35/TROLoad.git
         dest: /tmp/TROLoad
         version: "{{ app_version }}"
-
-...

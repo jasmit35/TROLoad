@@ -22,7 +22,9 @@ from std_logging import function_logger
 class CategoryGroupsTable:
     def __init__(self, db_conn):
         self._logger = getLogger()
-        self._logger.info(f"Begin 'CategoryGroupsTable.__init__' arguments - ({db_conn=})")
+        self._logger.info(
+            f"Begin 'CategoryGroupsTable.__init__' arguments - ({db_conn=})"
+        )
 
         self._db_conn = db_conn
 

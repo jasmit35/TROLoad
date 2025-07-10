@@ -3,7 +3,7 @@ __init__.py
 
 """
 
-__version__ = "feature/v2.0.1"
+__version__ = "feature/2.0.2"
 
 
 #

@@ -19,7 +19,9 @@ class CategoryTypesTable:
     # ---------------------------------------------------------------------------------------------------------------------
     def __init__(self, db_conn):
         self._logger = getLogger()
-        self._logger.info("Begin 'CategoryTypesTable.__init__' arguments - ({db_conn=})")
+        self._logger.info(
+            "Begin 'CategoryTypesTable.__init__' arguments - ({db_conn=})"
+        )
 
         self._db_conn = db_conn
 

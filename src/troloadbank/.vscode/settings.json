@@ -1,13 +1,11 @@
 {
     "makefile.configureOnOpen": false,
     "[python]": {
-       "editor.formatOnSave": true,
-       "editor.defaultFormatter": "charliermarsh.ruff"
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
     "python.analysis.extraPaths": [
         "/Users/jeff/devl/TROLoad/src/troloadbank/.venv"
     ],
-    "python.autoComplete.extraPaths": [
-      
-    ],
+    "python.autoComplete.extraPaths": []
 }

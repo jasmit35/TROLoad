@@ -38,7 +38,6 @@ make dr-run
 
 Review the log files from the load. If their are problems that can be corrected via Quicken, do so and start over at 'Monthly Processing'.
 
-
 ### Check balances
 
 Chage to the sql directory and run the balances queries. (Be sure to adjust the dates in the SQL!)

@@ -1,7 +1,9 @@
-## This file is used to set environment variables for the Makefile
-## It is sourced by the Makefile
-
-environment = 'devl'
+# This file is used to set environment variables for the Makefile
 
 app_name = "troloadbank"
-app_version = '0.1.0'
+app_version = "25.1.0.10"
+environment = "devl"
+
+#  Don't change these unless you know what you're doing
+app_home = "/opt/app/$(app_name)"
+app_nfs_home = "/Volumes/synology_nfs/$(environment)/troload"

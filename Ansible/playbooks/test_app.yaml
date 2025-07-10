@@ -1,5 +1,4 @@
 ---
-
 - name: Deploy the TROLoadTrans application
   hosts: vagrant1
   gather_facts: true
@@ -25,5 +24,3 @@
       with_items:
         - git
         - make
-
-...

@@ -1,4 +1,3 @@
-
 # Mounting an NFS Share
 
 To mount an NFS share, you can use the following command
@@ -22,11 +21,13 @@ To mount an NFS share, you can use the following command
 - You may need to install the NFS client utilities on your system if not already installed.
 
 ## Unmounting
+
 To unmount the NFS share, use:
 
 ```bash
 sudo umount /mnt/nfsstorage
 ```
+
 ## I give up
 
 sudo mkdir /Volumes/nfsstorage/

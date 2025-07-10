@@ -2,7 +2,7 @@
 
 [project]
 name = "TROLoadBank"
-version = "2.0.1"
+version = "2.0.2"
 description = "Load banking transaction data from Quicken into the TRO database."
 authors = [{ name = "jasmit", email = "jasmit@swbell.net" }]
 readme = "README.md"
@@ -13,6 +13,7 @@ dependencies = [
     "openpyxl>=3.1.5",
     "pandas>=2.2.3",
     "psycopg[binary]>=3.2.7",
+    "schedule>=1.2.2",
 ]
 
 [project.urls]
@@ -124,7 +125,7 @@ skip_empty = true
 
 [tool.coverage.run]
 branch = true
-source = ["troloadtrans"]
+source = ["troloadbank"]
 
 #########################################
 

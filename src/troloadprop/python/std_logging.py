@@ -60,7 +60,9 @@ class StdLogging:
 def function_logger(func):
     def logged(*args, **kwargs):
         function_name = func.__name__.ljust(24)
-        getLogger().info(f"Begin '{function_name}' arguments - {args} keyword arguments - {kwargs}")
+        getLogger().info(
+            f"Begin '{function_name}' arguments - {args} keyword arguments - {kwargs}"
+        )
         result = func(*args, **kwargs)
         getLogger().info(f"End   '{function_name}' returns   - {result}")
         return result

@@ -1,5 +1,4 @@
 ---
-
 - name: Deploy the TROLoadTrans application
   hosts: vagrant1
   gather_facts: false
@@ -7,5 +6,3 @@
   tasks:
     - name: Call the standard playbook to make sure appuser exists
       include_playbook: /Users/jeff/Ansible/playbooks/appuser_exists.yaml
-
-...

@@ -60,7 +60,8 @@ class StdReport:
 
         self.report(("=" * 132) + "\n")
         self.report(f"{self._app_name}")
-        self._file.write(" " * 117)
+        blank_spaces = 132 - len(self._app_name) - 8
+        self._file.write(" " * blank_spaces)
         self._file.write(f"{start_date}\n")
         self._file.write(f"Version - {self._version}")
         self._file.write(" " * 100)
