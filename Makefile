@@ -19,25 +19,13 @@ docker-build: ## Build the Docker image
 .PHONY: docker-run
 docker-run: ## Run this project's container
 	@echo "🚀  Running the container..."
-	@docker run -d \
+	@docker container run \
+		--detach \
+		--name $(app_name) \
 		--mount type=bind,source=$(app_nfs_home)/logs,target=$(app_home)/logs \
 		--mount type=bind,source=$(app_nfs_home)/reports,target=$(app_home)/reports \
 		--mount type=bind,source=$(app_nfs_home)/stage,target=$(app_home)/stage \
 		jasmit/$(app_name):$(app_version) -e $(environment)
-
-.PHONY: docker-test
-docker-run: ## Run this project's container
-	@echo "🚀  Running the container..."
-	@docker run --pull always -it \
-		--mount type=bind,source=$(app_nfs_home)/logs,target=$(app_home)/logs \
-		--mount type=bind,source=$(app_nfs_home)/reports,target=$(app_home)/reports \
-		--mount type=bind,source=$(app_nfs_home)/stage,target=$(app_home)/stage \
-		jasmit/$(app_name):$(app_version)
-
-.PHONY: dr-bash
-dr-bash:
-	@echo "🚀  Connecting to running docker container..."
-	@docker container run --rm -it --entrypoint /bin/bash -v ./logs:/opt/app/$(app_name)/logs -v ./reports:/opt/app/$(app_name)/reports -v ./stage:/opt/app/$(app_name)/stage jasmit/$(app_name):$(app_version)
 
 ################################################################################
 .PHONY: install

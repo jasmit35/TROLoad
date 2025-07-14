@@ -1,37 +1,58 @@
 ---
 
-- name: Deploy TROLoadBank application
-  hosts: '{{ HOSTS }}' 
-  become: true
+- name: Deploy TROLoadBank application to a Docker Swarm
+  hosts: '{{ HOSTS }}'
+  become: false
   gather_facts: false
 
   vars:
     image: jasmit/troloadbank
-    tag: 25.1.0.2
+    tag: 25.1.0.12
+    app_home: /opt/app/troloadbank
+    app_nfs_home: /Volume/synology_nfs/devl/troload
+    app_name: troloadbank
 
   tasks:
 
-    - name: Ensure Docker is installed
-      ansible.builtin.package:
-        name: docker.io
-        state: present
+    - name: Create the service shell
+      ansible.builtin.shell: >
+        docker container run \
+          --detach \
+          --name '{{ app_name }}' \
+          --mount type=bind,source={{ app_nfs_home }}/logs,target={{ app_home }}/logs \
+          --mount type=bind,source={{ app_nfs_home }}/reports,target={{ app_home }}/reports \
+          --mount type=bind,source={{ app_nfs_home }}/stage,target={{ app_home }}/stage \
+          '{{ image }}':'{{ tag }}' "-e devl" 
 
-    - name: Ensure Docker is running
-      ansible.builtin.service:
-        name: docker
-        state: started
-        enabled: true
 
-    - name: Deploy a container using the image
-      community.docker.docker_swarm_service:
-        debug: true
-        name: troloadbank
-        image: "{{ image }}:{{ tag }}"
-        mounts:
-          - type: bind 
-            source: /Volumes/synology_nfs
-            target: /Volumes/nfs_volume
-        command: '-e devl' 
+    #  - name: Ensure Docker is installed
+    #    ansible.builtin.package:
+    #      name: docker.io
+    #      state: present
+
+    #  - name: Ensure Docker is running
+    #    ansible.builtin.service:
+    #      name: docker
+    #      state: started
+    #      enabled: true
+
+    #  - name: Deploy application as a servicei
+    #     community.docker.docker_swarm_service:
+    #     debug: false
+    #     name: TROLoadBank
+    #     mounts:
+    #       - type: bind
+    #         source: /Volumes/synology_nfs/devl/troload/logs
+    #         target: /opt/app/troloadbank/logs
+    #       - type: bind
+    #         source: /Volumes/synology_nfs/devl/troload/reports
+    #         target: /opt/app/troloadbank/reports
+    #       - type: bind
+    #         source: /Volumes/synology_nfs/devl/troload/stage
+    #          target: /opt/app/troloadbank/stage
+    #          image: "{{ image }}:{{ tag }}"
+    #      command: "-e devl"
+
 
     #  Sample use:
     #  make PLAYBOOK=troloadbank_deploy HOSTS=enki, run-on-hosts

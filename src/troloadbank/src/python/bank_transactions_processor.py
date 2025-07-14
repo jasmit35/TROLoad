@@ -8,10 +8,9 @@ transactions from an Excel spreadsheet.
 from logging import getLogger
 
 import pandas as pd
-from jasmit_firestarter import function_logger
-
 from accounts import AccountsTable
 from categories_table import CategoriesTable
+from jasmit_firestarter import function_logger
 from transactions import Transaction, TransactionsTable
 
 

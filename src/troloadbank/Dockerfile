@@ -65,4 +65,4 @@ USER appuser
 
 ##  Run app via uv
 ENTRYPOINT [ "uv", "run", "python/troloadbank.py" ]
-CMD ["-e", "devl"]
+#  CMD ["-e", "devl", "--cfgfile", "etc/troloadbank.cfg"]
