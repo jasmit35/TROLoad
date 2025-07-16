@@ -73,6 +73,8 @@ class TroLoadBank(StdApp):
             help="Name of the configuration file to use",
         )
         args = parser.parse_args()
+        self._logger.debug(f"Command line arguments: {args}")
+
         return vars(args)
 
     #  -----------------------------------------------------------------------------
@@ -150,19 +152,19 @@ if __name__ == "__main__":
         this_app._output_report.print_header()
 
         #  every 15 minutes for the next 24 hours process the stagged files
-        stop_time = datetime.timedelta(hours=1)
+        stop_time = datetime.timedelta(hours=24)
         every(15).minutes.until(stop_time).do(this_app.process_stagged_files)
 
         while True:
             n = idle_seconds()  # seconds until the next job is due
 
             if n is None:  # no more jobs to run
-                this_app.report("No more jobs to run. Exiting.")
+                this_app.report("No more jobs to run. Exiting.\n")
                 break
 
             if n > 0:
                 sleep(n)  # sleep until the next job is due
-                this_app.report("Running pending jobs...")
+                this_app.report("Running pending jobs...\n")
                 run_pending()
 
         this_app._output_report.print_footer(this_app._max_return_code)

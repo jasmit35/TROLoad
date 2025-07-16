@@ -6,35 +6,34 @@
   gather_facts: false
 
   vars:
-    image: jasmit/troloadbank
-    tag: 25.1.0.12
-    app_home: /opt/app/troloadbank
-    app_nfs_home: /Volume/synology_nfs/devl/troload
     app_name: troloadbank
+    app_home: /opt/app/troloadbank
+    app_nfs_home: /Volumes/synology_nfs/devl/troload
+    image: jasmit/troloadbank
+    tag: 25.1.0
 
   tasks:
 
-    - name: Create the service shell
+    - name: Ensure Docker is installed
+      ansible.builtin.package:
+        name: docker.io
+        state: present
+
+    - name: Create the troloadbank service
       ansible.builtin.shell: >
-        docker container run \
+        docker service create \
           --detach \
           --name '{{ app_name }}' \
           --mount type=bind,source={{ app_nfs_home }}/logs,target={{ app_home }}/logs \
           --mount type=bind,source={{ app_nfs_home }}/reports,target={{ app_home }}/reports \
           --mount type=bind,source={{ app_nfs_home }}/stage,target={{ app_home }}/stage \
-          '{{ image }}':'{{ tag }}' "-e devl" 
+          '{{ image }}':'{{ tag }}' '-e' 'devl'
 
-
-    #  - name: Ensure Docker is installed
-    #    ansible.builtin.package:
-    #      name: docker.io
-    #      state: present
-
-    #  - name: Ensure Docker is running
-    #    ansible.builtin.service:
-    #      name: docker
-    #      state: started
-    #      enabled: true
+    - name: Ensure Docker is running
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
 
     #  - name: Deploy application as a servicei
     #     community.docker.docker_swarm_service:
@@ -51,7 +50,7 @@
     #         source: /Volumes/synology_nfs/devl/troload/stage
     #          target: /opt/app/troloadbank/stage
     #          image: "{{ image }}:{{ tag }}"
-    #      command: "-e devl"
+    #      command: '-er' 'devl'
 
 
     #  Sample use:

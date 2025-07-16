@@ -62,7 +62,7 @@ class CategoriesTable:
         self._logger.info(f"End   'CategoriesTable._load_cache' returns - {entries}")
 
     # ---------------------------------------------------------------------------------------------------------------------
-    @function_logger
+    #  @function_logger # Uncomment if you want to log this method
     def get_id_using_name(self, category_name):
         category_id = self._cache.get(category_name)
         if category_id is None:
