@@ -1,54 +1,47 @@
 # TRO Load System Guide
 
-## Deploying a new release to Test
+## Deploying a release
 
-Use the ansible playbook to ensure the docker NFS volume is available.
+### Pre-deployment check
 
-```
-cd /Users/jeff/devl/ansible
-make PLAYBOOK=docker_nfs_volume_create HOSTS=localhost, run-on-hosts
+Check that all the code in the development environment has been checked into GitHub.
 
-```
+Make sure the docker image has been recorded:
 
-## Deploying a new release to Prod
+    * troloadbank - 2025.1.0)
+    * troloadtrans -
+    * trload???? -
 
-**If FireStarter has not been updated to specify a release, stage the desired release in the /tmp directory before running auto_update. Then be sure to select the option to use the existing tar file.**
+and pushed to PyPi.
 
-```
-cd /tmp
-git clone https://github.com/jasmit35/TROLoad.git --branch release/v1.0.0
-```
+Make sure all of the severs in the target swarm have the /Volume/synology_nfs directory available. If not go to the instructions for the hardware and get it set up.
 
-### Archive the existing version:
+### Deployment
 
-```
-cd ~/prod/
-tar -czvf TROLoad_2022_06_26.tar.gz TROLoad
-```
-
-### Clean up any much older archives and the current version:
+Use the ansible script to perform the deployment.
 
 ```
-cd ~/prod/
-ll
-rm TROLoad_2021*
-rm -rf TROLoad
+cd ~/devl/troload/ansible
 ```
 
-### Use auto-update to install the new release:
+
+
 
 ```
-export ENVIRONMENT=prod
-auto-update -e prod -a troload
-```
-
-### Update .db_secrets.env
-
-The secrets files are not stored on GitHub because the contain user names and passwords. You need to manually copy the files:
+make PLAYBOOK=deploy HOSTS=test_swarm, run-on-hosts
 
 ```
-cd /Users/jeff/prod/TROLoad/local/etc
-cp /Users/jeff/devl/TROLoad/local/etc/.db_secrets.env .
-```
 
-# Requirements.txt
+
+
+
+
+
+
+
+
+
+
+
+
+

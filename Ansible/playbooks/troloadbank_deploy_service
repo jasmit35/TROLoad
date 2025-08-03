@@ -2,13 +2,14 @@
 
 - name: Deploy TROLoadBank application to a Docker Swarm
   hosts: '{{ HOSTS }}'
-  become: false
+  become: true 
   gather_facts: false
 
   vars:
+    environmet: test
     app_name: troloadbank
     app_home: /opt/app/troloadbank
-    app_nfs_home: /Volumes/synology_nfs/devl/troload
+    app_nfs_home: /Volumes/synology_nfs/test/troload
     image: jasmit/troloadbank
     tag: 25.1.0
 
@@ -19,6 +20,12 @@
         name: docker.io
         state: present
 
+    - name: Ensure Docker is running
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
     - name: Create the troloadbank service
       ansible.builtin.shell: >
         docker service create \
@@ -27,13 +34,7 @@
           --mount type=bind,source={{ app_nfs_home }}/logs,target={{ app_home }}/logs \
           --mount type=bind,source={{ app_nfs_home }}/reports,target={{ app_home }}/reports \
           --mount type=bind,source={{ app_nfs_home }}/stage,target={{ app_home }}/stage \
-          '{{ image }}':'{{ tag }}' '-e' 'devl'
-
-    - name: Ensure Docker is running
-      ansible.builtin.service:
-        name: docker
-        state: started
-        enabled: true
+          '{{ image }}':'{{ tag }}' '-e' 'test'
 
     #  - name: Deploy application as a servicei
     #     community.docker.docker_swarm_service:

@@ -1,0 +1,71 @@
+---
+
+- name: Copy the necessary files for the troloadbank application
+  hosts: '{{ HOSTS }}'
+  become: true
+  gather_facts: true
+
+  vars:
+
+    src_env: devl
+    trg_evn: test
+    app_name: troloadbank
+    app_version: 25.1.0
+    # github_ssh_key: "{{ ansible_user_dir }}/.ssh/github_{{ ansible_hostname }}"
+
+  tasks:
+
+    - name: The application home for macOS
+      ansible.builtin.set_fact:
+        app_home: "/Users/appowner/{{ trg_env }}/{{ app_name }}"
+      when: ansible_distribution == 'Darwin'
+
+    - name: The application home for Linux
+      ansible.builtin.set_fact:
+        app_home: "/home/appowner/{{ trg_env }}/{{ app_name }}"
+      when: ansible_distribution == 'Debian'
+
+    # - name: Display value
+    #   ansible.builtin.debug:
+    #     msg: "{{ app_home }}"
+
+    - name: Create the application's home
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        group: appgroup
+        owner: appowner
+        mode: "0750"
+      loop:
+        - "{{ app_home }}"
+        - "{{ app_home }}/logs"
+        - "{{ app_home }}/reports"
+        - "{{ app_home }}/stage"
+
+    # - name: Ensure the user 'appowner' exist
+    #   ansible.builtin.user:
+    #     name: appowner
+    #     group: appgroup
+    #     uid: 10001
+    #     shell: /bin/bash
+    #     hidden: true
+    #     state: present
+
+    # - name: Ensure the user 'appuser' exist
+    #   become: true
+    #   ansible.builtin.user:
+    #     name: appuser
+    #     group: appgroup
+    #     comment: User with enough privilages to run the application
+    #     state: present
+    #     shell: /bin/bash
+    #     uid: 10000
+    #     hidden: true
+
+    # - name: Copy the code from GitHub
+    #   ansible.builtin.git:
+    #     repo: https://github.com/jasmit35/TROLoad.git
+    #     dest: /tmp/TROLoad
+    #     version: "{{ app_version }}"
+
+...
